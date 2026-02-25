@@ -1,0 +1,25 @@
+# Python compile files (ไฟล์ขยะที่เกิดจากการรันโปรแกรม ไม่ควรขึ้น git)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment (โฟลเดอร์ Environment ของแต่ละเครื่อง ไม่ควรขึ้น git)
+venv/
+env/
+.env
+.venv/
+
+# Kivy specific (ไฟล์ที่เกิดจากการ Build หรือ Log ของ Kivy)
+/*.spec
+/.kivy/
+*.kv.pyc
+*.kv.pyo
+
+# IDE specific (การตั้งค่าของ VS Code หรือ Editor ส่วนตัว)
+.vscode/
+.idea/
+*.swp
+
+# OS specific (ไฟล์ขยะของ Windows/Mac)
+.DS_Store
+Thumbs.db
