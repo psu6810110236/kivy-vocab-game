@@ -36,11 +36,11 @@ class MainLayout(BoxLayout):
     def on_wrong(self, instance):
         self.hp.take_damage()
         self.hp_label.text = f"HP: {self.hp.current_hp}"
-        self.add_widget(self.hp_label)
         self.sound.play_wrong()
 
         if self.hp.is_dead():
             print("GAME OVER")
+            self.sound.play_gameover()
 
 class VocabGameApp(App):
     def build(self):
