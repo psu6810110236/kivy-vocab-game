@@ -1,0 +1,107 @@
+<MenuScreen>:
+    # (โค้ดหน้า Menu เหมือนเดิม)
+    canvas.before:
+        Color:
+            rgba: 0.2, 0.1, 0.4, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 20
+        Label:
+            text: 'VOCAB GAME'
+            font_size: '50sp'
+            color: 0, 0.8, 1, 1
+            bold: True
+        Button:
+            text: 'START GAME'
+            background_normal: ''
+            background_color: 0, 0.8, 0.2, 1
+            size_hint_y: 0.3
+            on_release: app.root.current = 'game'
+        # ... (ปุ่มอื่นๆ เหมือนเดิม)
+
+<GameScreen>:
+    # ปรับปรุง: ใช้ RelativeLayout เพื่อวาง Widget ทับกันได้
+    RelativeLayout:
+        # เทสีพื้นหลังเป็นสี紫色
+        canvas.before:
+            Color:
+                rgba: 0.18, 0.12, 0.28, 1
+            Rectangle:
+                pos: 0, 0
+                size: self.size
+
+        # ส่วนที่ 1: จัด Layout เนื้อหาเกมหลัก (บนลงล่าง)
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 25
+            spacing: 15
+            
+            # --- แถบสถานะ ---
+            BoxLayout:
+                size_hint_y: 0.1
+                Label:
+                    text: '❤️ Scooby Snacks'
+                    color: 0.8, 0.5, 0.2, 1
+                Label:
+                    text: 'Score: 0'
+                    color: 0.2, 0.8, 0.8, 1
+                Label:
+                    text: 'Combo: x1'
+                    color: 0.6, 0.9, 0.2, 1
+
+            # --- ส่วนทายคำศัพท์ ---
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: 0.4
+                Label:
+                    text: 'RUH-ROH! ปริศนา:'
+                    font_size: '30sp'
+                    bold: True
+                Label:
+                    text: 'แมว'
+                    font_size: '50sp'
+                    bold: True
+                    color: 1, 0.8, 0.2, 1
+                TextInput:
+                    hint_text: 'พิมพ์คำแปล...'
+                    multiline: False
+                    font_size: '32sp'
+                    halign: 'center'
+                Button:
+                    text: 'SOLVE MYSTERY!'
+                    font_size: '24sp'
+                    bold: True
+                    background_normal: ''
+                    background_color: 0.5, 0.8, 0.1, 1
+
+            # --- ปุ่มร้านค้า (เอามาไว้ด้านบนสคูบี้) ---
+            BoxLayout:
+                size_hint_y: 0.2
+                spacing: 10
+                Button:
+                    text: 'หาเบาะแส'
+                    background_normal: ''
+                    background_color: 0.1, 0.7, 0.7, 1
+                Button:
+                    text: 'ขึ้นรถหนีผี!'
+                    background_normal: ''
+                    background_color: 0.5, 0.2, 0.6, 1
+
+            # เติมช่องว่างด้านล่างเพื่อให้ Layout สมดุล
+            Widget:
+                size_hint_y: 0.3
+
+
+        # 🔴🟢 ขั้นตอนหลัก: แทรกรูปภาพสคูบี้ดู 🟢🔴
+        # วางรูปภาพไว้ด้านล่างสุดของ RelativeLayout เพื่อไม่ให้บังปุ่ม
+        Image:
+            source: 'scooby.png'  # ชื่อไฟล์รูปภาพที่คุณเตรียมไว้
+            size_hint: None, None
+            size: '200sp', '250sp' # ปรับขนาดรูปภาพ (sp เพื่อให้ Responsive)
+            pos_hint: {'right': 0.98, 'bottom': 0.02} # วางไว้มุมล่างขวา
+            allow_stretch: True
