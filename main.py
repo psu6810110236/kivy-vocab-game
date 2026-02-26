@@ -3,6 +3,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
+from kivy.uix.label import Label
 
 class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
@@ -11,6 +12,10 @@ class MainLayout(BoxLayout):
         # สร้างตัวจัดการเสียง
         self.sound = SoundManager()
         self.hp = HPSystem(max_hp=3)
+
+        self.hp_label = Label(text=f"HP: {self.hp.current_hp}", font_size=28)
+        self.add_widget(self.hp_label)
+
 
         # ปุ่ม Correct
         btn_correct = Button(text="Correct", font_size=32)
@@ -31,6 +36,7 @@ class MainLayout(BoxLayout):
     def on_wrong(self, instance):
         self.hp.take_damage()
         self.hp_label.text = f"HP: {self.hp.current_hp}"
+        self.add_widget(self.hp_label)
         self.sound.play_wrong()
 
         if self.hp.is_dead():
