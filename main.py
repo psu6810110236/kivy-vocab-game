@@ -14,6 +14,8 @@ from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
 from systems.game_logic import GameLogic 
 
+from widgets.ghost import Ghost
+
 class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(orientation="vertical", spacing=10, padding=10, **kwargs)
@@ -24,10 +26,14 @@ class MainLayout(BoxLayout):
         self.logic = GameLogic(self.hp)
 
         # ระบบเวลา
-        self.time_left = 60.0  
+        self.time_left = 16.00
         self.time_speed = 1.00  
         # เปลี่ยนเป็นอัปเดตทุก 0.1 วิ เพื่อให้หลอดเวลาลดแบบสมูทๆ
         Clock.schedule_interval(self.update_timer, 0.10) 
+
+        # --- Enemy System (Ghost) ---
+        self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
+        self.add_widget(self.ghost)
 
         # 2. Mock ข้อมูลคำศัพท์ 100 คำ
         self.vocab_list = [
@@ -161,9 +167,8 @@ class MainLayout(BoxLayout):
         
         if self.time_left <= 0:
             self.time_left = 0
-            self.sound.play_gameover()
-            self.word_label.text = "TIME'S UP! GAME OVER!"
-            self.answer_input.disabled = True
+            self.next_word()
+            self.time_left = 16.00
             
         # อัปเดตทั้งข้อความและหลอด Progress Bar
         self.time_label.text = f"Time: {int(self.time_left)}s (Speed: {self.time_speed:.2f}x)"
@@ -194,8 +199,8 @@ class MainLayout(BoxLayout):
         
         if is_correct:
             self.sound.play_correct()
-            self.time_left += 3  # โบนัส ตอบถูกบวกเวลา 3 วินาที
-            
+            self.time_left = 16.00 
+            self.ghost.reset() 
             # ถ้าโบนัสทำให้เวลาเกินหลอด ให้ขยายขีดจำกัดหลอดตามไปด้วย
             if self.time_left > self.time_bar.max:
                 self.time_bar.max = self.time_left
@@ -203,7 +208,6 @@ class MainLayout(BoxLayout):
             
             self.next_word()
         else:
-            self.sound.play_wrong()
             self.answer_input.text = "" 
             if self.time_speed > 1.0:
                 self.time_speed = 1.0 # <--- ตอบผิดก็โดนรีเซ็ตบัฟหน่วงเวลาด้วย
@@ -247,6 +251,19 @@ class MainLayout(BoxLayout):
         if self.logic.score < 0:
             self.logic.score = 0
         self.update_ui()
+    
+    def on_ghost_hit(self):
+        if self.hp.is_dead() or self.time_left <= 0:
+            return
+
+        self.hp.take_damage()
+        self.sound.play_wrong()
+        self.update_ui()
+
+        if self.hp.is_dead():
+            self.sound.play_gameover()
+            self.word_label.text = "GAME OVER!"
+            self.answer_input.disabled = True
 
 class VocabGameApp(App):
     def build(self):
