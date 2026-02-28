@@ -1,6 +1,6 @@
 from kivy.uix.image import Image
 from kivy.clock import Clock
-
+from kivy.core.window import Window
 class Ghost(Image):
     def __init__(self, on_hit_callback, travel_time=15, **kwargs):
         super().__init__(**kwargs)
@@ -8,9 +8,9 @@ class Ghost(Image):
         self.size_hint = (None, None)
         self.size = (150, 150)
 
-        self.start_x = 1000   # เริ่มขวาสุด
-        self.end_x = 150      # ตำแหน่ง Scooby
-        self.pos = (self.start_x, 120)
+        self.start_x = Window.width + 100    # เริ่มขวาสุด
+        self.end_x = 80      # ตำแหน่ง Scooby
+        self.pos = (self.start_x, 80)
 
         self.travel_time = travel_time
         self.elapsed_time = 0
