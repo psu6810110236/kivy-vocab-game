@@ -15,7 +15,7 @@ class Ghost(Image):
         self.travel_time = travel_time
         self.elapsed_time = 0
         self.on_hit_callback = on_hit_callback
-
+        self.is_paused = False
         Clock.schedule_interval(self.update, 1/60)
 
     def update(self, dt):
