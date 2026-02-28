@@ -16,7 +16,7 @@ import random
 from widgets.ghost import Ghost
 # ✅ ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
 LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF') 
-
+from kivy.uix.image import Image
 # ==========================================
 # 1. สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
 # ==========================================
@@ -65,7 +65,17 @@ from systems.game_logic import GameLogic
 class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        self.bind(size=self.on_resize)
+        # =======================
+        # ใส่ Scooby (ตัวละครหลัก)
+        # =======================
+        self.scooby = Image(
+            source="assets/images/scooby.png",
+            size_hint=(None, None),
+            size=(260, 260),
+            pos=(40, 40)
+        )
+        self.add_widget(self.scooby)
         # --- 🖼️ จัดการภาพพื้นหลัง Scooby-Doo ---
         with self.canvas.before:
             Color(1, 1, 1, 1)  
@@ -194,6 +204,9 @@ class MainLayout(FloatLayout):
         self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
         self.add_widget(self.ghost)
 
+        Clock.schedule_once(self.setup_ghost_position, 0)
+        self.ghost.end_x = self.scooby.x + 40
+        self.ghost.y = self.scooby.y
     def _update_bg(self, instance, value):
         self.bg_rect.pos = instance.pos
         self.bg_rect.size = instance.size
@@ -212,7 +225,8 @@ class MainLayout(FloatLayout):
         # ไม่ต้องทำอะไรเมื่อเวลา = 0
         # เพราะดาเมจจะเกิดตอนผีชน (on_ghost_hit) เท่านั้น
         if self.time_left <= 0:
-            self.time_left = 0  # แค่ค้างไว้เฉย ๆ
+            self.time_left = 16.0 
+            self.time_speed = 1.0 # แค่ค้างไว้เฉย ๆ
 
         self.time_label.text = f"Time: {int(self.time_left)}s (Speed: {self.time_speed:.2f}x)"
         self.time_bar.value = self.time_left
@@ -306,8 +320,18 @@ class MainLayout(FloatLayout):
             self.word_label.text = "GAME OVER!"
             self.answer_input.disabled = True
     
-        
+    def setup_ghost_position(self, dt):
+    # ให้ผีเริ่มนอกขอบขวาของหน้าจอเสมอ
+        self.ghost.start_x = self.width + 100
+        self.ghost.x = self.ghost.start_x
 
+        # เป้าหมายคือ Scooby
+        self.ghost.end_x = self.scooby.x + 40
+        self.ghost.y = self.scooby.y
+    def on_resize(self, *args):
+    # อัปเดตตำแหน่งเกิดผีทุกครั้งที่ขยายจอ
+        self.ghost.start_x = self.width + 100
+        self.ghost.x = self.ghost.start_x
 class VocabGameApp(App):
     def build(self):
         return MainLayout()
