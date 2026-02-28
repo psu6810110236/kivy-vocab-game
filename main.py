@@ -98,8 +98,53 @@ class MainLayout(FloatLayout):
             {"thai": "แมว", "english": "cat"}, {"thai": "หมา", "english": "dog"},
             {"thai": "นก", "english": "bird"}, {"thai": "แอปเปิ้ล", "english": "apple"},
             {"thai": "โรงเรียน", "english": "school"}, {"thai": "มด", "english": "ant"},
-            {"thai": "ผี", "english": "ghost"}, {"thai": "สัตว์ประหลาด", "english": "monster"},
-            {"thai": "ความลับ", "english": "secret"}, {"thai": "เบาะแส", "english": "clue"}
+            {"thai": "หมี", "english": "bear"}, {"thai": "วัว", "english": "cow"},
+            {"thai": "เป็ด", "english": "duck"}, {"thai": "ช้าง", "english": "elephant"},
+            {"thai": "ปลา", "english": "fish"}, {"thai": "แพะ", "english": "goat"},
+            {"thai": "ม้า", "english": "horse"}, {"thai": "กิ้งก่า", "english": "iguana"},
+            {"thai": "แมงกะพรุน", "english": "jellyfish"}, {"thai": "จิงโจ้", "english": "kangaroo"},
+            {"thai": "สิงโต", "english": "lion"}, {"thai": "ลิง", "english": "monkey"},
+            {"thai": "รังนก", "english": "nest"}, {"thai": "นกฮูก", "english": "owl"},
+            {"thai": "หมู", "english": "pig"}, {"thai": "นกกระทา", "english": "quail"},
+            {"thai": "กระต่าย", "english": "rabbit"}, {"thai": "งู", "english": "snake"},
+            {"thai": "เสือ", "english": "tiger"}, {"thai": "ร่ม", "english": "umbrella"},
+            {"thai": "รถตู้", "english": "van"}, {"thai": "ปลาวาฬ", "english": "whale"},
+            {"thai": "ไซโลโฟน", "english": "xylophone"}, {"thai": "จามรี", "english": "yak"},
+            {"thai": "ม้าลาย", "english": "zebra"}, {"thai": "เด็กผู้ชาย", "english": "boy"},
+            {"thai": "เด็กผู้หญิง", "english": "girl"}, {"thai": "ผู้ชาย", "english": "man"},
+            {"thai": "ผู้หญิง", "english": "woman"}, {"thai": "หนังสือ", "english": "book"},
+            {"thai": "ปากกา", "english": "pen"}, {"thai": "ดินสอ", "english": "pencil"},
+            {"thai": "ยางลบ", "english": "eraser"}, {"thai": "ไม้บรรทัด", "english": "ruler"},
+            {"thai": "โต๊ะเรียน", "english": "desk"}, {"thai": "เก้าอี้", "english": "chair"},
+            {"thai": "โต๊ะ", "english": "table"}, {"thai": "ประตู", "english": "door"},
+            {"thai": "หน้าต่าง", "english": "window"}, {"thai": "เตียง", "english": "bed"},
+            {"thai": "ห้อง", "english": "room"}, {"thai": "บ้าน", "english": "house"},
+            {"thai": "หลังคา", "english": "roof"}, {"thai": "กำแพง", "english": "wall"},
+            {"thai": "พระอาทิตย์", "english": "sun"}, {"thai": "พระจันทร์", "english": "moon"},
+            {"thai": "ดาว", "english": "star"}, {"thai": "ท้องฟ้า", "english": "sky"},
+            {"thai": "เมฆ", "english": "cloud"}, {"thai": "ฝน", "english": "rain"},
+            {"thai": "หิมะ", "english": "snow"}, {"thai": "ลม", "english": "wind"},
+            {"thai": "ไฟ", "english": "fire"}, {"thai": "น้ำ", "english": "water"},
+            {"thai": "ต้นไม้", "english": "tree"}, {"thai": "ดอกไม้", "english": "flower"},
+            {"thai": "หญ้า", "english": "grass"}, {"thai": "ใบไม้", "english": "leaf"},
+            {"thai": "ราก", "english": "root"}, {"thai": "สีแดง", "english": "red"},
+            {"thai": "สีเขียว", "english": "green"}, {"thai": "สีน้ำเงิน", "english": "blue"},
+            {"thai": "สีเหลือง", "english": "yellow"}, {"thai": "สีดำ", "english": "black"},
+            {"thai": "สีขาว", "english": "white"}, {"thai": "สีส้ม", "english": "orange"},
+            {"thai": "สีชมพู", "english": "pink"}, {"thai": "สีม่วง", "english": "purple"},
+            {"thai": "สีน้ำตาล", "english": "brown"}, {"thai": "สีเทา", "english": "gray"},
+            {"thai": "หนึ่ง", "english": "one"}, {"thai": "สอง", "english": "two"},
+            {"thai": "สาม", "english": "three"}, {"thai": "สี่", "english": "four"},
+            {"thai": "ห้า", "english": "five"}, {"thai": "หก", "english": "six"},
+            {"thai": "เจ็ด", "english": "seven"}, {"thai": "แปด", "english": "eight"},
+            {"thai": "เก้า", "english": "nine"}, {"thai": "สิบ", "english": "ten"},
+            {"thai": "กิน", "english": "eat"}, {"thai": "ดื่ม", "english": "drink"},
+            {"thai": "นอน", "english": "sleep"}, {"thai": "วิ่ง", "english": "run"},
+            {"thai": "เดิน", "english": "walk"}, {"thai": "กระโดด", "english": "jump"},
+            {"thai": "ว่ายน้ำ", "english": "swim"}, {"thai": "บิน", "english": "fly"},
+            {"thai": "อ่าน", "english": "read"}, {"thai": "เขียน", "english": "write"},
+            {"thai": "พูด", "english": "speak"}, {"thai": "ฟัง", "english": "listen"},
+            {"thai": "เล่น", "english": "play"}, {"thai": "ทำงาน", "english": "work"}
         ]
         self.current_word = random.choice(self.vocab_list)
 
@@ -314,6 +359,8 @@ class MainLayout(FloatLayout):
         self.hp.take_damage()
         self.sound.play_wrong()
         self.update_ui()
+        self.ghost.is_paused = True
+        Clock.schedule_once(self.reset_ghost_after_hit, 1.0)
 
         if self.hp.is_dead():
             self.sound.play_gameover()
@@ -332,6 +379,9 @@ class MainLayout(FloatLayout):
     # อัปเดตตำแหน่งเกิดผีทุกครั้งที่ขยายจอ
         self.ghost.start_x = self.width + 100
         self.ghost.x = self.ghost.start_x
+    def reset_ghost_after_hit(self, dt):
+        self.ghost.reset()
+        self.ghost.is_paused = False
 class VocabGameApp(App):
     def build(self):
         return MainLayout()
