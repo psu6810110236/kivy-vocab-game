@@ -259,19 +259,20 @@ class MainLayout(FloatLayout):
         self.overlay_rect.size = instance.size
 
     def update_timer(self, dt):
-    # ถ้าเกมจบแล้วก็หยุดนับ
+        # ถ้าเกมจบแล้วให้หยุดนับ
         if self.hp.is_dead():
             return False  
 
-        # เวลาใช้แค่บอกว่าผีจะถึงในกี่วินาที
+        # ✅ ถ้าผีชนแล้วระบบกำลังหยุดพัก (is_paused) ให้ข้ามการลดเวลาไปก่อน
+        if getattr(self.ghost, 'is_paused', False):
+            return 
+
         self.time_speed += 0.001 
         self.time_left -= (self.time_speed * 0.1)
 
-        # ไม่ต้องทำอะไรเมื่อเวลา = 0
-        # เพราะดาเมจจะเกิดตอนผีชน (on_ghost_hit) เท่านั้น
+        # ✅ เมื่อเวลาหมด ให้ค้างหลอดเวลาไว้ที่ 0 รอให้ผีชนและฟังก์ชันรีเซ็ตทำงาน
         if self.time_left <= 0:
-            self.time_left = 16.0 
-            self.time_speed = 1.0 # แค่ค้างไว้เฉย ๆ
+            self.time_left = 0
 
         self.time_label.text = f"Time: {int(self.time_left)}s (Speed: {self.time_speed:.2f}x)"
         self.time_bar.value = self.time_left
@@ -353,14 +354,30 @@ class MainLayout(FloatLayout):
         self.update_ui()
     
     def on_ghost_hit(self):
-        if self.hp.is_dead() or self.time_left <= 0:
+        # เปลี่ยนเงื่อนไข ไม่ต้องเช็คเวลา <= 0 เพราะถ้าเวลา 0 ต้องโดนดาเมจ
+        if self.hp.is_dead() or getattr(self.ghost, 'is_paused', False):
             return
 
+        self.time_left = 0
         self.hp.take_damage()
         self.sound.play_wrong()
-        self.update_ui()
+        
+        # ✅ สั่งหยุดผี (ซึ่งจะทำให้ update_timer หยุดนับเวลาไปด้วย)
         self.ghost.is_paused = True
-        Clock.schedule_once(self.reset_ghost_after_hit, 1.0)
+        
+        # ✅ ล้างช่องพิมพ์ และล็อกช่องพิมพ์ชั่วคราวให้ผู้เล่นตั้งสติ
+        self.answer_input.text = ""
+        self.answer_input.disabled = True 
+
+        self.update_ui()
+
+        if self.hp.is_dead():
+            self.sound.play_gameover()
+            self.word_label.text = "GAME OVER!"
+            self.underscore_label.text = ""
+        else:
+            # ✅ ปรับเวลาดีเลย์ตรงนี้ได้ (เช่น 2.0 วินาที) แล้วค่อยเริ่มรอบใหม่
+            Clock.schedule_once(self.reset_ghost_after_hit, 2.0)
 
         if self.hp.is_dead():
             self.sound.play_gameover()
@@ -380,8 +397,27 @@ class MainLayout(FloatLayout):
         self.ghost.start_x = self.width + 100
         self.ghost.x = self.ghost.start_x
     def reset_ghost_after_hit(self, dt):
+        # ถ้าเลือดหมดแล้วไม่ต้องรีเซ็ต
+        if self.hp.is_dead():
+            return
+
+        # รีเซ็ตผีกลับไปที่จุดเริ่มต้น
         self.ghost.reset()
         self.ghost.is_paused = False
+
+        # เปลี่ยนคำศัพท์ใหม่
+        self.next_word()
+
+        # ✅ ปลดล็อกให้พิมพ์ได้อีกครั้ง
+        self.answer_input.disabled = False
+        
+        # ✅ ดึงโฟกัสให้ผู้เล่นพิมพ์ต่อได้ทันทีโดยไม่ต้องเอาเมาส์ไปคลิก
+        self.answer_input.focus = True
+
+        # รีเซ็ตเวลาใหม่ให้เต็ม
+        self.time_left = 16.0
+        self.time_speed = 1.0
+        self.time_bar.value = self.time_left
 class VocabGameApp(App):
     def build(self):
         return MainLayout()
