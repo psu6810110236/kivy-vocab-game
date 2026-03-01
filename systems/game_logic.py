@@ -19,7 +19,7 @@ class GameLogic:
             return True
         else:
             # ตอบผิด: ลดชีวิต 1 แต้ม และรีเซ็ต Streak/Combo
-            self.hp.take_damage(1)
+            
             self.streak = 0
             self.combo_multiplier = 1
             return False

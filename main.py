@@ -1,3 +1,5 @@
+from unittest import loader
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
@@ -13,6 +15,7 @@ from kivy.properties import ListProperty
 from kivy.factory import Factory
 from kivy.uix.widget import Widget 
 import random
+from kivy.core.audio import SoundLoader
 from widgets.ghost import Ghost
 # ✅ ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
 LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF') 
@@ -76,6 +79,15 @@ class MainLayout(FloatLayout):
             pos=(40, 40)
         )
         self.add_widget(self.scooby)
+        # ตัวอย่างการโหลดเพลง Theme หลัก
+        self.bg_music = SoundLoader.load("assets/music/theme.mp3") # หรือ .mp3 ตามชื่อไฟล์ที่คุณมี
+
+        if self.bg_music:
+            self.bg_music.loop = True     # ตั้งให้เล่นวนซ้ำ
+            self.bg_music.volume = 0.3    # ปรับความดัง 0.0 - 1.0
+            self.bg_music.play()          # สั่งให้เพลงเริ่มเล่น
+        else:
+            print("ไม่สามารถโหลดไฟล์เสียงได้ ตรวจสอบ Path ไฟล์อีกครั้ง")
         # --- 🖼️ จัดการภาพพื้นหลัง Scooby-Doo ---
         with self.canvas.before:
             Color(1, 1, 1, 1)  
