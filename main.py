@@ -22,6 +22,8 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window 
 from kivy.uix.behaviors import ButtonBehavior
 
+
+
 Window.minimum_width = 360
 Window.minimum_height = 640
 # ✅ ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
@@ -82,7 +84,9 @@ Builder.load_string('''
             pos_hint: {'center_x': 0.5, 'center_y': 0.31}
             background_normal: ''
             background_color: 0,0,0,0
-            on_release: app.start_game_from_menu()
+            on_release:
+                app.sound.play_click()
+                app.start_game_from_menu()
 
         # OPTIONS
         Button:
@@ -91,7 +95,10 @@ Builder.load_string('''
             pos_hint: {'center_x': 0.5, 'center_y': 0.19}
             background_normal: ''
             background_color: 0,0,0,0
-            on_release: app.go_to_options('main_menu')
+            on_release:
+                app.sound.play_click()
+                app.go_to_options('main_menu')
+            
 
         # EXIT
         Button:
@@ -100,7 +107,9 @@ Builder.load_string('''
             pos_hint: {'center_x': 0.5, 'center_y': 0.08}
             background_normal: ''
             background_color: 0,0,0,0
-            on_release: app.stop()
+            on_release:
+                app.sound.play_click()
+                app.stop()
 
 <OptionsScreen>:
     canvas.before:
@@ -139,7 +148,9 @@ Builder.load_string('''
                 font_size: '50sp'
                 size_hint_x: 0.2
                 bg_color: 0.8, 0.3, 0.3, 1
-                on_release: app.change_volume(-0.1)
+                on_release: 
+                    app.sound.play_click()
+                    app.change_volume(-0.1)
                 
             Label:
                 text: f'ระดับเสียงดนตรี: {int(app.volume_level * 100)}%'
@@ -152,7 +163,9 @@ Builder.load_string('''
                 font_size: '50sp'
                 size_hint_x: 0.2
                 bg_color: 0.2, 0.7, 0.3, 1
-                on_release: app.change_volume(0.1)
+                on_release: 
+                    app.sound.play_click()
+                    app.change_volume(0.1)
         
         Widget:
             size_hint_y: 0.1
@@ -166,7 +179,9 @@ Builder.load_string('''
             size_hint_x: 0.5
             pos_hint: {'center_x': 0.5}
             bg_color: 0.5, 0.5, 0.5, 1
-            on_release: app.back_from_options()
+            on_release: 
+                app.sound.play_click()
+                app.back_from_options()
         
         Widget:
             size_hint_y: 0.3
@@ -186,7 +201,7 @@ class GameScreen(Screen):
         for child in self.children:
             if isinstance(child, MainLayout):
                 child.on_screen_enter()
-                child.start_game()   # ✅ เริ่มเกมตอนเข้าหน้านี้
+                
 from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
 from systems.game_logic import GameLogic 
@@ -218,7 +233,7 @@ class MainLayout(FloatLayout):
             
         self.bind(size=self._update_bg, pos=self._update_bg)
 
-        self.sound = SoundManager()
+        self.sound = App.get_running_app().sound
         self.hp = HPSystem(max_hp=3)
         self.logic = GameLogic(self.hp)
 
@@ -375,7 +390,9 @@ class MainLayout(FloatLayout):
 
         self.add_widget(vbox)
 
+        
         self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
+        self.ghost.is_paused = True
         self.add_widget(self.ghost)
 
         Clock.schedule_once(self.setup_ghost_position, 0)
@@ -448,13 +465,16 @@ class MainLayout(FloatLayout):
             self.ghost.is_paused = False
 
     def _update_pause_bg(self, instance, value):
+        self.sound.play_click()
         self.pause_bg.pos = instance.pos
         self.pause_bg.size = instance.size
 
     def go_to_options_from_pause(self, instance):
+        self.sound.play_click()
         App.get_running_app().go_to_options('game_screen')
 
     def quit_to_main_menu(self, instance):
+        self.sound.play_click()
         self.toggle_pause() 
         self.reset_entire_game() 
         if self.parent and hasattr(self.parent, 'manager'):
@@ -606,17 +626,23 @@ class MainLayout(FloatLayout):
         self.time_bar.value = self.time_left
 
     def start_game(self):
-        if self.game_started:
-            return
-
+        # รีเซ็ตค่าทุกอย่างใหม่ก่อนเริ่มจริง
         self.game_started = True
         self.time_left = 16.0
         self.time_speed = 1.0
-
-        self.timer_event = Clock.schedule_interval(self.update_timer, 0.10)
-
+        self.logic.score = 0
+        self.logic.combo_multiplier = 1
+        self.hp.current_hp = self.hp.max_hp
+        
+        # เริ่ม Timer
+        if self.timer_event:
+            self.timer_event.cancel()
+        self.timer_event = Clock.schedule_interval(self.update_timer, 0.1)
+        
+        # ปล่อยผี!
         self.ghost.reset()
         self.ghost.is_paused = False
+        self.update_ui()
 
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
@@ -624,13 +650,15 @@ class VocabGameApp(App):
     previous_screen = 'main_menu' 
 
     def build(self):
-        self.bg_music = SoundLoader.load("assets/music/theme.mp3") 
+        # โหลด SoundManager
+        self.sound = SoundManager()
+
+        # โหลดเพลงพื้นหลัง
+        self.bg_music = SoundLoader.load("assets/sound/music/theme.mp3")
         if self.bg_music:
             self.bg_music.loop = True
             self.bg_music.volume = self.volume_level
             self.bg_music.play()
-        else:
-            print("ไม่สามารถโหลดไฟล์เสียงได้ ตรวจสอบ Path ไฟล์อีกครั้ง")
 
         sm = ScreenManager()
         
@@ -663,12 +691,12 @@ class VocabGameApp(App):
 
     def start_game_from_menu(self):
         self.root.current = 'game_screen'
-
+        # ค้นหา MainLayout ใน game_screen
         game_screen = self.root.get_screen('game_screen')
         for child in game_screen.children:
             if isinstance(child, MainLayout):
-                child.reset_entire_game()
-                child.start_game()
+                child.reset_entire_game() # ล้างค่าเก่า
+                child.start_game()        # สั่งเริ่มจริงๆ ที่นี่
 
 if __name__ == "__main__":
     VocabGameApp().run()
