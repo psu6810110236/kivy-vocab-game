@@ -502,21 +502,74 @@ class MainLayout(FloatLayout):
 
     def next_word(self):
         if not self.vocab_pool:
-            self.word_label.text = "เคลียร์ด่านแล้ว! (STAGE CLEAR)"
-            self.underscore_label.text = f"คะแนน: {self.logic.score}"
-            self.word_label.color = (0.2, 1, 0.2, 1)
+            # ล็อคปุ่มและช่องพิมพ์เพื่อป้องกันบัคปั๊มคะแนน
             self.answer_input.disabled = True
+            self.submit_btn.disabled = True 
             self.ghost.is_paused = True
+            self.word_label.color = (0.2, 1, 0.2, 1)
+
+            # [FEATURE] เช็คว่าด่านปัจจุบันน้อยกว่า 5 ไหม ถ้าใช่ให้ไปด่านต่อไป
+            if hasattr(self, 'current_level') and self.current_level < 5:
+                self.word_label.text = f"เคลียร์ด่าน {self.current_level}! เตรียมลุย..."
+                self.underscore_label.text = f"คะแนนสะสม: {self.logic.score}"
+                
+                # หน่วงเวลาให้ผู้เล่นพักหายใจ 2.5 วินาที ก่อนเรียกฟังก์ชันข้ามด่าน
+                Clock.schedule_once(self.go_to_next_level, 2.5)
+            else:
+                self.word_label.text = "ยินดีด้วย! คุณเคลียร์ทุกด่านแล้ว!"
+                self.underscore_label.text = f"คะแนนสูงสุด: {self.logic.score}"
+                if self.timer_event:
+                    self.timer_event.cancel()
+                    self.timer_event = None
+                Clock.schedule_once(self.return_to_main_menu_auto, 5.0)
             return
             
         self.current_word = self.vocab_pool.pop()
         self.answer_input.text = ""
         self.update_ui()
+    
+    def go_to_next_level(self, dt):
+        # เพิ่มระดับด่านขึ้น 1
+        self.current_level += 1
+        
+        # โหลดคำศัพท์ของด่านใหม่ในหมวดหมู่เดิม
+        self.load_vocabulary(self.current_category, str(self.current_level))
+        
+        # รีเซ็ตเวลา ความเร็ว และสีข้อความ (แต่ไม่รีเซ็ตคะแนนและเลือด)
+        self.time_left = 16.0
+        self.time_speed = 1.0
+        self.word_label.color = (1, 1, 1, 1) 
+        
+        # จับผีกลับไปจุดเริ่มต้นและปล่อยเดิน
+        self.ghost.reset()
+        self.ghost.is_paused = False
+        
+        # ปลดล็อคปุ่มและช่องพิมพ์ให้เริ่มเล่นต่อ
+        self.answer_input.disabled = False
+        self.submit_btn.disabled = False
+        self.answer_input.focus = True
+        
+        # ดึงคำศัพท์คำแรกของด่านใหม่มาแสดง
+        self.next_word()
+        self.update_ui()
+
+    def return_to_main_menu_auto(self, dt):
+        # รีเซ็ตค่าตัวแปรทั้งหมดให้พร้อมสำหรับการเริ่มเกมรอบหน้า
+        self.reset_entire_game()
+        
+        # สั่งเปลี่ยนหน้าจอกลับไปที่หน้า main_menu
+        if self.parent and hasattr(self.parent, 'manager'):
+            self.parent.manager.current = 'main_menu'
 
     def on_screen_enter(self):
         Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
 
     def _force_focus(self):
+        if self.is_paused or getattr(self.ghost, 'is_paused', False) or self.hp.is_dead():
+            return
+            
+        if not self.vocab_pool: 
+            return
         self.answer_input.disabled = False
         self.answer_input.focus = True
 
@@ -717,6 +770,8 @@ class MainLayout(FloatLayout):
 
     def start_game(self, category, level):
         # รีเซ็ตค่าและโหลดคำศัพท์ตามโหมดที่เลือก
+        self.current_category = category
+        self.current_level = int(level)
         self.load_vocabulary(category, level)
 
         self.game_started = True
@@ -734,6 +789,9 @@ class MainLayout(FloatLayout):
         # ปล่อยผี!
         self.ghost.reset()
         self.ghost.is_paused = False
+        self.answer_input.disabled = False
+        if hasattr(self, 'submit_btn'):
+            self.submit_btn.disabled = False
         self.next_word()
         self.update_ui()
 
