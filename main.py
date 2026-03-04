@@ -586,6 +586,7 @@ class MainLayout(FloatLayout):
 
         self.is_paused = not self.is_paused
         if self.is_paused:
+            self.answer_input.text = ""
             self.pause_overlay.opacity = 1
             self.pause_overlay.disabled = False
             self.pause_overlay.pos_hint = {'center_x': 0.5, 'center_y': 0.5} 
