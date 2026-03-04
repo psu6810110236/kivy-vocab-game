@@ -538,6 +538,8 @@ class MainLayout(FloatLayout):
         # รีเซ็ตเวลา ความเร็ว และสีข้อความ (แต่ไม่รีเซ็ตคะแนนและเลือด)
         self.time_left = 16.0
         self.time_speed = 1.0
+        self.time_bar.max = 60
+        self.hp.current_hp = self.hp.max_hp
         self.word_label.color = (1, 1, 1, 1) 
         
         # จับผีกลับไปจุดเริ่มต้นและปล่อยเดิน
