@@ -487,7 +487,7 @@ class MainLayout(FloatLayout):
         json_key = cat_map.get(category_name, 'daily')
         
         try:
-            with open('vocab.data.json', 'r', encoding='utf-8') as f:
+            with open('vocab_data.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
             # โหลดคำศัพท์ทั้งหมดของหมวดและระดับนั้นๆ
