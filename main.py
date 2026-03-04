@@ -199,7 +199,7 @@ class GameScreen(Screen):
         for child in self.children:
             if isinstance(child, MainLayout):
                 child.on_screen_enter()
-
+                child.start_game()   # ✅ เริ่มเกมตอนเข้าหน้านี้
 from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
 from systems.game_logic import GameLogic 
@@ -208,6 +208,8 @@ from systems.game_logic import GameLogic
 class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.game_started = False
+        self.timer_event = None
         self.bind(size=self.on_resize)
         
         self.is_paused = False 
@@ -235,7 +237,7 @@ class MainLayout(FloatLayout):
 
         self.time_left = 16.0  
         self.time_speed = 1.00  
-        Clock.schedule_interval(self.update_timer, 0.10) 
+       
 
         # ✅ เพิ่มคำศัพท์จัดเต็มกว่า 100 คำ ครอบคลุมหลายหมวดหมู่
         self.vocab_list = [
@@ -494,7 +496,8 @@ class MainLayout(FloatLayout):
             return
         if self.is_paused or self.hp.is_dead() or getattr(self.ghost, 'is_paused', False):
             return 
-            
+        if not self.game_started:
+            return
         self.time_speed += 0.001 
         self.time_left -= (self.time_speed * 0.1)
         if self.time_left <= 0:
@@ -609,6 +612,19 @@ class MainLayout(FloatLayout):
         self.time_left = 16.0
         self.time_speed = 1.0
         self.time_bar.value = self.time_left
+
+    def start_game(self):
+        if self.game_started:
+            return
+
+        self.game_started = True
+        self.time_left = 16.0
+        self.time_speed = 1.0
+
+        self.timer_event = Clock.schedule_interval(self.update_timer, 0.10)
+
+        self.ghost.reset()
+        self.ghost.is_paused = False
 
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
