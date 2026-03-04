@@ -146,7 +146,7 @@ class MainLayout(FloatLayout):
             {"thai": "สีชมพู", "english": "pink"}, {"thai": "สีม่วง", "english": "purple"},
             {"thai": "สีน้ำตาล", "english": "brown"}, {"thai": "สีเทา", "english": "gray"},
             {"thai": "หนึ่ง", "english": "one"}, {"thai": "สอง", "english": "two"},
-            {"thai": "สาม", "english": "three"}, {"thai": "สี่", "english": "four"},
+            {"thai": "สาม", "english": "three"}, {"thai": "สี่่", "english": "four"},
             {"thai": "ห้า", "english": "five"}, {"thai": "หก", "english": "six"},
             {"thai": "เจ็ด", "english": "seven"}, {"thai": "แปด", "english": "eight"},
             {"thai": "เก้า", "english": "nine"}, {"thai": "สิบ", "english": "ten"},
