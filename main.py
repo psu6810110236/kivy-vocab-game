@@ -67,52 +67,39 @@ Builder.load_string('''
             radius: [20]
 
 <MainMenuScreen>:
-    canvas.before:
-        Rectangle:
-            pos: self.pos
-            size: self.size
-            source: 'assets/images/bg_scooby_doo.png'
-        Color:
-            rgba: 0, 0, 0, 0.6  
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
     FloatLayout:
-        Label:
-            text: 'EGO WORDS'
-            font_size: '60sp'
-            font_name: 'LEELAUIB.TTF'
-            bold: True
-            color: 1, 0.8, 0.2, 1
-            pos_hint: {'center_x': 0.5, 'center_y': 0.75}
 
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: dp(20)
-        padding: dp(20)
-        size_hint: 0.7, 0.5
-        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-
-        ImageButton:
-            source: 'assets/images/start_button.png'
-            size_hint: 1, 0.33
+        Image:
+            source: 'assets/images/menu_bg.png'
             allow_stretch: True
-            keep_ratio: True
-            on_release: root.manager.current = 'game_screen'
+            keep_ratio: False
+            size_hint: 1, 1
 
-        ImageButton:
-            source: 'assets/images/option_button.png'
-            size_hint: 1, 0.33
-            allow_stretch: True
-            keep_ratio: True
+        # START
+        Button:
+            text: ''
+            size_hint: 0.19, 0.10
+            pos_hint: {'center_x': 0.5, 'center_y': 0.31}
+            background_normal: ''
+            background_color: 0,0,0,0
+            on_release: app.start_game_from_menu()
+
+        # OPTIONS
+        Button:
+            text: ''
+            size_hint: 0.18, 0.09
+            pos_hint: {'center_x': 0.5, 'center_y': 0.19}
+            background_normal: ''
+            background_color: 0,0,0,0
             on_release: app.go_to_options('main_menu')
 
-        ImageButton:
-            source: 'assets/images/exit_button.png'
-            size_hint: 1, 0.33
-            allow_stretch: True
-            keep_ratio: True
+        # EXIT
+        Button:
+            text: ''
+            size_hint: 0.18, 0.09
+            pos_hint: {'center_x': 0.5, 'center_y': 0.08}
+            background_normal: ''
+            background_color: 0,0,0,0
             on_release: app.stop()
 
 <OptionsScreen>:
@@ -474,6 +461,11 @@ class MainLayout(FloatLayout):
             self.parent.manager.current = 'main_menu'
 
     def reset_entire_game(self):
+        if self.timer_event:
+            self.timer_event.cancel()
+            self.timer_event = None
+
+        self.game_started = False
         self.hp = HPSystem(max_hp=3)
         self.logic = GameLogic(self.hp)
         self.time_left = 16.0
@@ -668,6 +660,15 @@ class VocabGameApp(App):
 
     def back_from_options(self):
         self.root.current = self.previous_screen
+
+    def start_game_from_menu(self):
+        self.root.current = 'game_screen'
+
+        game_screen = self.root.get_screen('game_screen')
+        for child in game_screen.children:
+            if isinstance(child, MainLayout):
+                child.reset_entire_game()
+                child.start_game()
 
 if __name__ == "__main__":
     VocabGameApp().run()
