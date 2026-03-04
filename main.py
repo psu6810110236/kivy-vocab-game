@@ -663,7 +663,8 @@ class MainLayout(FloatLayout):
         self.hp_label.text = f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}"
         self.score_label.text = f"Score: {self.logic.score}"
         self.combo_label.text = f"Combo: x{self.logic.combo_multiplier}"
-        self.word_label.text = f"ปริศนา: {self.current_word['thai']}"
+        lvl = getattr(self, 'current_level', 1)
+        self.word_label.text = f"[ด่าน {lvl}] ปริศนา: {self.current_word['thai']}"
         english_word = self.current_word['english']
         underscores_list = []
         for char in english_word:
