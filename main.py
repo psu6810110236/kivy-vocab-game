@@ -698,8 +698,10 @@ class MainLayout(FloatLayout):
                 Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
 
     def buy_life(self, instance):
-        if self.logic.buy_life(cost=50):
-            self.update_ui()
+        # เช็คว่าเลือดปัจจุบันน้อยกว่าเลือดสูงสุดหรือเปล่า
+        if self.hp.current_hp < self.hp.max_hp:
+            if self.logic.buy_life(cost=50):
+                self.update_ui()
 
     def get_hint(self, instance):
         hint = self.logic.get_hint(self.current_word["english"], cost=20)
