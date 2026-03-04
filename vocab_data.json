@@ -1,0 +1,53 @@
+{
+  "nature": {
+    "1": [
+      {"thai": "แมว", "english": "cat"}, {"thai": "หมา", "english": "dog"}, {"thai": "นก", "english": "bird"}, {"thai": "ปลา", "english": "fish"}, {"thai": "หมู", "english": "pig"}, {"thai": "วัว", "english": "cow"}, {"thai": "เป็ด", "english": "duck"}, {"thai": "ไก่", "english": "chicken"}, {"thai": "งู", "english": "snake"}, {"thai": "มด", "english": "ant"}
+    ],
+    "2": [
+      {"thai": "ช้าง", "english": "elephant"}, {"thai": "สิงโต", "english": "lion"}, {"thai": "เสือ", "english": "tiger"}, {"thai": "ลิง", "english": "monkey"}, {"thai": "ม้า", "english": "horse"}, {"thai": "หมี", "english": "bear"}, {"thai": "กระต่าย", "english": "rabbit"}, {"thai": "กวาง", "english": "deer"}, {"thai": "หมาป่า", "english": "wolf"}, {"thai": "ฉลาม", "english": "shark"}
+    ],
+    "3": [
+      {"thai": "จระเข้", "english": "crocodile"}, {"thai": "เพนกวิน", "english": "penguin"}, {"thai": "โลมา", "english": "dolphin"}, {"thai": "ปลาวาฬ", "english": "whale"}, {"thai": "นกฮูก", "english": "owl"}, {"thai": "กิ้งก่า", "english": "lizard"}, {"thai": "แมงมุม", "english": "spider"}, {"thai": "ค้างคาว", "english": "bat"}, {"thai": "อูฐ", "english": "camel"}, {"thai": "กบ", "english": "frog"}
+    ],
+    "4": [
+      {"thai": "สัตว์ครึ่งบกครึ่งน้ำ", "english": "amphibian"}, {"thai": "สัตว์เลื้อยคลาน", "english": "reptile"}, {"thai": "สัตว์เลี้ยงลูกด้วยนม", "english": "mammal"}, {"thai": "ระบบนิเวศ", "english": "ecosystem"}, {"thai": "การสูญพันธุ์", "english": "extinction"}, {"thai": "สัตว์กินเนื้อ", "english": "carnivore"}, {"thai": "สัตว์กินพืช", "english": "herbivore"}, {"thai": "ถิ่นที่อยู่", "english": "habitat"}, {"thai": "ผู้ล่า", "english": "predator"}, {"thai": "เหยื่อ", "english": "prey"}
+    ],
+    "5": [
+      {"thai": "สัตว์ไม่มีกระดูกสันหลัง", "english": "invertebrate"}, {"thai": "ความหลากหลายทางชีวภาพ", "english": "biodiversity"}, {"thai": "การสังเคราะห์ด้วยแสง", "english": "photosynthesis"}, {"thai": "วิวัฒนาการ", "english": "evolution"}, {"thai": "การกลายพันธุ์", "english": "mutation"}, {"thai": "ความสัมพันธ์แบบพึ่งพาอาศัย", "english": "symbiosis"}, {"thai": "สายพันธุ์", "english": "species"}, {"thai": "การสืบพันธุ์", "english": "reproduction"}, {"thai": "พันธุกรรม", "english": "genetics"}, {"thai": "ซากดึกดำบรรพ์", "english": "fossil"}
+    ]
+  },
+  "daily": {
+    "1": [
+      {"thai": "บ้าน", "english": "house"}, {"thai": "เตียง", "english": "bed"}, {"thai": "โต๊ะ", "english": "table"}, {"thai": "เก้าอี้", "english": "chair"}, {"thai": "ประตู", "english": "door"}, {"thai": "หนังสือ", "english": "book"}, {"thai": "ปากกา", "english": "pen"}, {"thai": "โรงเรียน", "english": "school"}, {"thai": "ข้าว", "english": "rice"}, {"thai": "น้ำ", "english": "water"}
+    ],
+    "2": [
+      {"thai": "หน้าต่าง", "english": "window"}, {"thai": "นาฬิกา", "english": "clock"}, {"thai": "โทรศัพท์", "english": "phone"}, {"thai": "กระเป๋า", "english": "bag"}, {"thai": "ดินสอ", "english": "pencil"}, {"thai": "เสื้อผ้า", "english": "clothes"}, {"thai": "รองเท้า", "english": "shoes"}, {"thai": "หมวก", "english": "hat"}, {"thai": "แว่นตา", "english": "glasses"}, {"thai": "กระจก", "english": "mirror"}
+    ],
+    "3": [
+      {"thai": "ตู้เย็น", "english": "refrigerator"}, {"thai": "โทรทัศน์", "english": "television"}, {"thai": "คอมพิวเตอร์", "english": "computer"}, {"thai": "แป้นพิมพ์", "english": "keyboard"}, {"thai": "ร่ม", "english": "umbrella"}, {"thai": "กระเป๋าสตางค์", "english": "wallet"}, {"thai": "กุญแจ", "english": "key"}, {"thai": "กรรไกร", "english": "scissors"}, {"thai": "ผ้าเช็ดตัว", "english": "towel"}, {"thai": "สบู่", "english": "soap"}
+    ],
+    "4": [
+      {"thai": "เฟอร์นิเจอร์", "english": "furniture"}, {"thai": "เครื่องใช้ไฟฟ้า", "english": "appliance"}, {"thai": "ยานพาหนะ", "english": "vehicle"}, {"thai": "การจราจร", "english": "traffic"}, {"thai": "จุดหมายปลายทาง", "english": "destination"}, {"thai": "ผู้โดยสาร", "english": "passenger"}, {"thai": "สัมภาระ", "english": "luggage"}, {"thai": "ตารางเวลา", "english": "schedule"}, {"thai": "ตั๋ว", "english": "ticket"}, {"thai": "หนังสือเดินทาง", "english": "passport"}
+    ],
+    "5": [
+      {"thai": "การจำนอง", "english": "mortgage"}, {"thai": "การประกันภัย", "english": "insurance"}, {"thai": "ภาษี", "english": "tax"}, {"thai": "การลงทุน", "english": "investment"}, {"thai": "บัญชี", "english": "account"}, {"thai": "สกุลเงิน", "english": "currency"}, {"thai": "เศรษฐกิจ", "english": "economy"}, {"thai": "การเจรจา", "english": "negotiation"}, {"thai": "ข้อตกลง", "english": "agreement"}, {"thai": "ลายเซ็น", "english": "signature"}
+    ]
+  },
+  "science_it": {
+    "1": [
+      {"thai": "ข้อมูล", "english": "data"}, {"thai": "รหัส", "english": "code"}, {"thai": "เมาส์", "english": "mouse"}, {"thai": "ไฟฟ้า", "english": "electricity"}, {"thai": "แบตเตอรี่", "english": "battery"}, {"thai": "เกม", "english": "game"}, {"thai": "หน้าจอ", "english": "screen"}, {"thai": "ระบบ", "english": "system"}, {"thai": "พลังงาน", "english": "energy"}, {"thai": "ไฟล์", "english": "file"}
+    ],
+    "2": [
+      {"thai": "ตัวแปร", "english": "variable"}, {"thai": "ฟังก์ชัน", "english": "function"}, {"thai": "วงจร", "english": "circuit"}, {"thai": "เซิร์ฟเวอร์", "english": "server"}, {"thai": "เครือข่าย", "english": "network"}, {"thai": "โลหะ", "english": "metal"}, {"thai": "ของเหลว", "english": "liquid"}, {"thai": "ก๊าซ", "english": "gas"}, {"thai": "สสาร", "english": "matter"}, {"thai": "โปรแกรม", "english": "program"}
+    ],
+    "3": [
+      {"thai": "แรงดันไฟฟ้า", "english": "voltage"}, {"thai": "กระแสไฟฟ้า", "english": "current"}, {"thai": "โครงสร้างข้อมูล", "english": "data structure"}, {"thai": "มวล", "english": "mass"}, {"thai": "สารประกอบ", "english": "compound"}, {"thai": "สมการ", "english": "equation"}, {"thai": "ฮาร์ดแวร์", "english": "hardware"}, {"thai": "ซอฟต์แวร์", "english": "software"}, {"thai": "รหัสผ่าน", "english": "password"}, {"thai": "โมเลกุล", "english": "molecule"}
+    ],
+    "4": [
+      {"thai": "ความต้านทาน", "english": "resistance"}, {"thai": "ปริมาณสารสัมพันธ์", "english": "stoichiometry"}, {"thai": "อัลกอริทึม", "english": "algorithm"}, {"thai": "อุณหพลศาสตร์", "english": "thermodynamics"}, {"thai": "อนุพันธ์", "english": "derivative"}, {"thai": "ฐานข้อมูล", "english": "database"}, {"thai": "ตัวเก็บประจุ", "english": "capacitor"}, {"thai": "อิเล็กตรอน", "english": "electron"}, {"thai": "ความเร่ง", "english": "acceleration"}, {"thai": "ความเร็ว", "english": "velocity"}
+    ],
+    "5": [
+      {"thai": "เคมีไฟฟ้า", "english": "electrochemistry"}, {"thai": "อินทิกรัล", "english": "integral"}, {"thai": "โมเมนต์ความเฉื่อย", "english": "moment of inertia"}, {"thai": "วิศวกรรมซอฟต์แวร์", "english": "software engineering"}, {"thai": "สถาปัตยกรรมคอมพิวเตอร์", "english": "computer architecture"}, {"thai": "ปัญญาประดิษฐ์", "english": "artificial intelligence"}, {"thai": "ควอนตัม", "english": "quantum"}, {"thai": "ตัวเหนี่ยวนำ", "english": "inductor"}, {"thai": "ทฤษฎีบท", "english": "theorem"}, {"thai": "ความถี่", "english": "frequency"}
+    ]
+  }
+}
