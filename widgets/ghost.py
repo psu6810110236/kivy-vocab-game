@@ -5,9 +5,9 @@ from kivy.core.window import Window
 class Ghost(Image):
     def __init__(self, on_hit_callback, travel_time=15, **kwargs):
         super().__init__(**kwargs)
-        self.source = "assets/images/ghost.png"
+        self.source = "assets/images/gostss.png"
         self.size_hint = (None, None)
-        self.size = (150, 150)
+        self.size = (650, 650)
 
         self.start_x = Window.width + 100    # เริ่มขวาสุด
         self.end_x = 80      # ตำแหน่ง Scooby
