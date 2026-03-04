@@ -618,7 +618,8 @@ class MainLayout(FloatLayout):
             return  
         user_ans = self.answer_input.text.strip().lower() 
         correct_ans = self.current_word["english"].lower()
-        if is_correct := self.logic.check_answer(user_ans, correct_ans):
+        is_correct = self.logic.check_answer(user_ans, correct_ans)
+        if is_correct:
             self.sound.play_correct()
             self.time_left = 16.0
             self.ghost.reset()
