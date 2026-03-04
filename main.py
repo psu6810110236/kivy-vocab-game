@@ -630,6 +630,7 @@ class MainLayout(FloatLayout):
                 self.time_bar.max = self.time_left
             self.time_bar.value = self.time_left
             self.next_word()
+            Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
         else:
             self.answer_input.text = "" 
             if self.time_speed > 1.0:
@@ -641,6 +642,7 @@ class MainLayout(FloatLayout):
                 self.underscore_label.text = "" 
                 self.word_label.color = (1, 0.3, 0.1, 1)
                 self.answer_input.disabled = True 
+                Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
 
     def buy_life(self, instance):
         if self.logic.buy_life(cost=50):
