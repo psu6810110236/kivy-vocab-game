@@ -648,6 +648,8 @@ class MainLayout(FloatLayout):
         if not self.game_started:
             return
         self.time_speed += 0.001 
+        if self.time_speed > 3.0: # ลิมิตความเร็วสูงสุดไว้ที่ 3 เท่า
+            self.time_speed = 3.0
         self.time_left -= (self.time_speed * 0.1)
         if self.time_left <= 0:
             self.time_left = 0
