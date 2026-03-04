@@ -709,11 +709,26 @@ class MainLayout(FloatLayout):
 
     def buy_slow_time(self, instance):
         cost = 30
+        
+        # เช็คว่าคะแนนพอซื้อหรือไม่
         if self.logic.score >= cost:
-            if self.time_speed > 0.5: 
-                self.logic.score -= cost
-                self.time_speed -= 0.1  
-                self.update_ui()
+            self.logic.score -= cost
+            
+            # [FIX] 1. ผลักผีกลับไปที่จุดเริ่มต้น (หนีผีได้จริงๆ แล้ว!)
+            if hasattr(self, 'ghost'):
+                self.ghost.reset()
+                self.ghost.is_paused = False
+            
+            # [FIX] 2. รีเซ็ตความเร็วเวลาให้ช้าลงแบบเห็นผลชัดเจน (เซ็ตกลับไปเป็น 0.75 เลย)
+            self.time_speed = 0.75 
+            
+            # [FIX] 3. แถมโบนัสต่อเวลาให้ผู้เล่นตั้งหลักอีก 5 วินาที
+            self.time_left += 5.0
+            if self.time_left > 16.0:  # ป้องกันเวลาล้นหลอด
+                self.time_left = 16.0
+            self.time_bar.value = self.time_left
+            
+            self.update_ui()
 
     def test_add_score(self, instance):
         self.logic.score += 10
