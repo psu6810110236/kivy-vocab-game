@@ -703,6 +703,8 @@ class MainLayout(FloatLayout):
                 self.word_label.color = (1, 0.3, 0.1, 1)
                 self.answer_input.disabled = True 
                 Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
+                self.word_label.color = (1, 0.3, 0.3, 1) 
+                Clock.schedule_once(lambda dt: setattr(self.word_label, 'color', (1, 1, 1, 1)), 0.5)
 
     def buy_life(self, instance):
         # เช็คว่าเลือดปัจจุบันน้อยกว่าเลือดสูงสุดหรือเปล่า
