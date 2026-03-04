@@ -371,7 +371,7 @@ class MainLayout(FloatLayout):
         )
         self.answer_input.bind(on_text_validate=self.check_answer) 
         
-        submit_btn = Factory.SmoothButton(
+        self.submit_btn = Factory.SmoothButton(
             text="SOLVE MYSTERY!", 
             font_size='30sp',        
             bold=True,
@@ -381,12 +381,12 @@ class MainLayout(FloatLayout):
             bg_color=(0.55, 0.9, 0.2, 1), 
             color=(0.1, 0.2, 0.05, 1) 
         )
-        submit_btn.bind(on_press=self.check_answer)
+        self.submit_btn.bind(on_press=self.check_answer)
         
         game_layout.add_widget(self.word_label)
         game_layout.add_widget(self.underscore_label) 
         game_layout.add_widget(self.answer_input)
-        game_layout.add_widget(submit_btn)
+        game_layout.add_widget(self.submit_btn)
         
         game_layout.add_widget(Widget(size_hint=(1, 0.05))) 
         vbox.add_widget(game_layout)
@@ -537,12 +537,14 @@ class MainLayout(FloatLayout):
             self.pause_overlay.disabled = False
             self.pause_overlay.pos_hint = {'center_x': 0.5, 'center_y': 0.5} 
             self.answer_input.disabled = True
+            self.submit_btn.disabled = True
             self.ghost.is_paused = True 
         else:
             self.pause_overlay.opacity = 0
             self.pause_overlay.disabled = True
             self.pause_overlay.pos_hint = {'y': 10} 
             self.answer_input.disabled = False
+            self.submit_btn.disabled = False
             self.answer_input.focus = True
             self.ghost.is_paused = False
 
@@ -576,6 +578,7 @@ class MainLayout(FloatLayout):
         self.ghost.reset()
         self.ghost.is_paused = False
         self.answer_input.disabled = False
+        self.submit_btn.disabled = False
         self.word_label.color = (1, 1, 1, 1)
 
     def _update_bg(self, instance, value):
@@ -676,6 +679,7 @@ class MainLayout(FloatLayout):
         self.ghost.is_paused = True
         self.answer_input.text = ""
         self.answer_input.disabled = True 
+        self.submit_btn.disabled = True
         self.update_ui()
         if self.hp.is_dead():
             self.sound.play_gameover()
@@ -702,6 +706,8 @@ class MainLayout(FloatLayout):
         self.ghost.is_paused = False
         self.next_word()
         self.answer_input.disabled = False
+        self.submit_btn.disabled = False
+        self.answer_input.focus = True
         self.answer_input.focus = True
         self.time_left = 16.0
         self.time_speed = 1.0
