@@ -23,7 +23,8 @@ from kivy.core.window import Window
 from kivy.uix.behaviors import ButtonBehavior
 import json
 from kivy.uix.spinner import Spinner
-
+from kivy.uix.screenmanager import Screen
+from kivy.app import App
 Window.minimum_width = 360
 Window.minimum_height = 640
 
@@ -275,8 +276,9 @@ Builder.load_string('''
 # ==========================================
 
 class MainMenuScreen(Screen):
-    pass
-
+    def on_enter(self, *args):
+        app = App.get_running_app()
+        app.sound.play_menu_bgm()
 class OptionsScreen(Screen):
     pass
 
@@ -843,11 +845,10 @@ class VocabGameApp(App):
 
     def build(self):
         self.sound = SoundManager()
-        self.bg_music = SoundLoader.load("assets/sound/music/theme.mp3")
-        if self.bg_music:
-            self.bg_music.loop = True
-            self.bg_music.volume = self.volume_level
-            self.bg_music.play()
+        
+        # ลบ 4-5 บรรทัดเดิมที่โหลด bg_music ออกไปเลยครับ
+        # แล้วสั่งให้ SoundManager เล่นเพลงเมนูตั้งแต่ตอนเปิดแอปแทน
+        self.sound.play_menu_bgm()
 
         sm = ScreenManager()
         
@@ -868,10 +869,12 @@ class VocabGameApp(App):
 
     def change_volume(self, change):
         new_vol = self.volume_level + change
-        self.volume_level = max(0.0, min(1.0, new_vol)) 
-        
-        if self.bg_music:
-            self.bg_music.volume = self.volume_level
+        self.volume_level = max(0.0, min(1.0, new_vol))
+
+        if self.sound.menu_bgm:
+            self.sound.menu_bgm.volume = self.volume_level
+        if self.sound.game_bgm:
+            self.sound.game_bgm.volume = self.volume_level
 
     def go_to_options(self, from_screen):
         self.previous_screen = from_screen
@@ -887,6 +890,16 @@ class VocabGameApp(App):
             if isinstance(child, MainLayout):
                 child.reset_entire_game() 
                 child.start_game(category, level)
+
+# คลาสของหน้าตอนเล่นเกม
+class GameScreen(Screen):
+    def on_enter(self, *args):
+        app = App.get_running_app()
+        app.sound.play_game_bgm()
+
+        for child in self.children:
+            if isinstance(child, MainLayout):
+                child.on_screen_enter()
 
 if __name__ == "__main__":
     VocabGameApp().run()
