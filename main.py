@@ -766,9 +766,13 @@ class MainLayout(FloatLayout):
         self.update_ui()
         if self.hp.is_dead():
             self.sound.play_gameover()
-            self.word_label.text = "GAME OVER!"
+            self.word_label.text = "RUH-ROH! GAME OVER!"
             self.underscore_label.text = ""
             self.answer_input.disabled = True
+            if self.timer_event:
+                self.timer_event.cancel()
+                self.timer_event = None
+            Clock.schedule_once(self.return_to_main_menu_auto, 4.0)
         else:
             Clock.schedule_once(self.reset_ghost_after_hit, 2.0)
     
