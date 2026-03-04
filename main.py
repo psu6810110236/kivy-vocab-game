@@ -747,6 +747,7 @@ class MainLayout(FloatLayout):
             return
         self.time_left = 0
         self.hp.take_damage()
+        self.logic.combo_multiplier = 1
         self.sound.play_wrong()
         self.ghost.is_paused = True
         self.answer_input.text = ""
