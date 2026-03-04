@@ -673,6 +673,8 @@ class MainLayout(FloatLayout):
         if self.hp.is_dead() or self.time_left <= 0 or self.is_paused:
             return  
         user_ans = self.answer_input.text.strip().lower() 
+        if not user_ans: # เพิ่ม 2 บรรทัดนี้: ถ้าว่างเปล่าให้เด้งออกไปเลย ไม่ตรวจ
+            return
         correct_ans = self.current_word["english"].lower()
         is_correct = self.logic.check_answer(user_ans, correct_ans)
         if is_correct:
