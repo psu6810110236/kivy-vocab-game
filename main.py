@@ -21,15 +21,18 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window 
 from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.image import Image
-from kivy.metrics import dp
+import json
+from kivy.uix.spinner import Spinner
 
 Window.minimum_width = 360
 Window.minimum_height = 640
-# ✅ ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
+
+# ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
 LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF') 
+
 class ImageButton(ButtonBehavior, Image):
     pass
+
 # ==========================================
 # 1. สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
 # ==========================================
@@ -38,7 +41,7 @@ class SmoothButton(Button):
     radius = ListProperty([25]) 
     shadow_color = ListProperty([0, 0, 0, 0.3])  
 
-# --- 🎨 โหลดสไตล์ UI พิเศษ ---
+# --- โหลดสไตล์ UI พิเศษ ---
 Builder.load_string('''
 <SmoothButton>:
     background_color: 0,0,0,0  
@@ -70,7 +73,6 @@ Builder.load_string('''
 
 <MainMenuScreen>:
     FloatLayout:
-
         Image:
             source: 'assets/images/menu_bg.png'
             allow_stretch: True
@@ -86,7 +88,7 @@ Builder.load_string('''
             background_color: 0,0,0,0
             on_release:
                 app.sound.play_click()
-                app.start_game_from_menu()
+                app.root.current = 'select_level'
 
         # OPTIONS
         Button:
@@ -99,7 +101,6 @@ Builder.load_string('''
                 app.sound.play_click()
                 app.go_to_options('main_menu')
             
-
         # EXIT
         Button:
             text: ''
@@ -185,17 +186,101 @@ Builder.load_string('''
         
         Widget:
             size_hint_y: 0.3
+
+<SelectLevelScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.2, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'assets/images/bg_scooby_doo.png'
+        Color:
+            rgba: 0, 0, 0, 0.7
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 30
+        
+        Label:
+            text: 'เลือกหมวดหมู่และระดับ'
+            font_size: '45sp'
+            font_name: 'LEELAUIB.TTF'
+            color: 1, 0.8, 0.2, 1
+            size_hint_y: 0.3
+            bold: True
+            
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 20
+            size_hint_y: 0.2
+            Label:
+                text: 'หมวดหมู่:'
+                font_size: '30sp'
+                font_name: 'LEELAUIB.TTF'
+            Spinner:
+                id: category_spinner
+                text: 'สัตว์และธรรมชาติ'
+                values: ['สัตว์และธรรมชาติ', 'ชีวิตประจำวัน', 'วิทยาศาสตร์ ไอที และวิศวกรรม']
+                font_name: 'LEELAUIB.TTF'
+                font_size: '22sp'
+                background_color: 0.2, 0.6, 0.8, 1
+
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 20
+            size_hint_y: 0.2
+            Label:
+                text: 'ความยาก:'
+                font_size: '30sp'
+                font_name: 'LEELAUIB.TTF'
+            Spinner:
+                id: level_spinner
+                text: '1'
+                values: ['1', '2', '3', '4', '5']
+                font_name: 'LEELAUIB.TTF'
+                font_size: '24sp'
+                background_color: 0.8, 0.4, 0.2, 1
+        
+        Widget:
+            size_hint_y: 0.1
+            
+        BoxLayout:
+            size_hint_y: 0.2
+            spacing: 20
+            SmoothButton:
+                text: 'กลับ (Back)'
+                bg_color: 0.5, 0.5, 0.5, 1
+                font_name: 'LEELAUIB.TTF'
+                font_size: '25sp'
+                on_release: 
+                    app.sound.play_click()
+                    app.root.current = 'main_menu'
+            SmoothButton:
+                text: 'เริ่มเกม (Start)'
+                bg_color: 0.2, 0.8, 0.2, 1
+                font_name: 'LEELAUIB.TTF'
+                font_size: '25sp'
+                on_release: 
+                    app.sound.play_click()
+                    app.start_game_with_settings(category_spinner.text, level_spinner.text)
 ''')
 
 # ==========================================
-# 2. จัดการหน้าจอต่างๆ (แก้ไขปัญหาพิมพ์ไม่ได้ตรงนี้)
+# 2. จัดการหน้าจอต่างๆ 
 # ==========================================
 
 class MainMenuScreen(Screen):
     pass
-class ImageButton(ButtonBehavior, Image):
-    pass
+
 class OptionsScreen(Screen):
+    pass
+
+class SelectLevelScreen(Screen): 
     pass
 
 class GameScreen(Screen):
@@ -208,7 +293,6 @@ from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
 from systems.game_logic import GameLogic 
 
-
 class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -218,6 +302,10 @@ class MainLayout(FloatLayout):
         
         self.is_paused = False 
         Window.bind(on_keyboard=self._on_keyboard)
+        
+        self.vocab_pool = []
+        self.total_words_in_level = 0
+        self.current_word = {"thai": "กำลังโหลด...", "english": "loading"}
 
         self.scooby = Image(
             source="assets/images/scooby.png",
@@ -241,74 +329,10 @@ class MainLayout(FloatLayout):
 
         self.time_left = 16.0  
         self.time_speed = 1.00  
-       
 
-        # ✅ เพิ่มคำศัพท์จัดเต็มกว่า 100 คำ ครอบคลุมหลายหมวดหมู่
-        self.vocab_list = [
-            # สัตว์
-            {"thai": "แมว", "english": "cat"}, {"thai": "หมา", "english": "dog"},
-            {"thai": "นก", "english": "bird"}, {"thai": "มด", "english": "ant"},
-            {"thai": "หมู", "english": "pig"}, {"thai": "วัว", "english": "cow"},
-            {"thai": "ช้าง", "english": "elephant"}, {"thai": "ลิง", "english": "monkey"},
-            {"thai": "เสือ", "english": "tiger"}, {"thai": "สิงโต", "english": "lion"},
-            {"thai": "หมี", "english": "bear"}, {"thai": "งู", "english": "snake"},
-            {"thai": "กระต่าย", "english": "rabbit"}, {"thai": "ปลา", "english": "fish"},
-            {"thai": "เป็ด", "english": "duck"}, {"thai": "ไก่", "english": "chicken"},
-            {"thai": "ม้า", "english": "horse"}, {"thai": "แกะ", "english": "sheep"},
-            # สิ่งของ / โรงเรียน
-            {"thai": "แอปเปิ้ล", "english": "apple"}, {"thai": "โรงเรียน", "english": "school"},
-            {"thai": "เก้าอี้", "english": "chair"}, {"thai": "โต๊ะ", "english": "table"},
-            {"thai": "หนังสือ", "english": "book"}, {"thai": "ปากกา", "english": "pen"},
-            {"thai": "ดินสอ", "english": "pencil"}, {"thai": "ไม้บรรทัด", "english": "ruler"},
-            {"thai": "ยางลบ", "english": "eraser"}, {"thai": "กระเป๋า", "english": "bag"},
-            {"thai": "โทรศัพท์", "english": "phone"}, {"thai": "นาฬิกา", "english": "clock"},
-            {"thai": "ประตู", "english": "door"}, {"thai": "หน้าต่าง", "english": "window"},
-            {"thai": "เตียง", "english": "bed"}, {"thai": "ห้อง", "english": "room"},
-            {"thai": "บ้าน", "english": "house"},
-            # ธรรมชาติ
-            {"thai": "พระอาทิตย์", "english": "sun"}, {"thai": "พระจันทร์", "english": "moon"},
-            {"thai": "ดาว", "english": "star"}, {"thai": "ท้องฟ้า", "english": "sky"},
-            {"thai": "เมฆ", "english": "cloud"}, {"thai": "ฝน", "english": "rain"},
-            {"thai": "ลม", "english": "wind"}, {"thai": "ไฟ", "english": "fire"},
-            {"thai": "น้ำ", "english": "water"}, {"thai": "ต้นไม้", "english": "tree"},
-            {"thai": "ดอกไม้", "english": "flower"}, {"thai": "หญ้า", "english": "grass"},
-            {"thai": "ใบไม้", "english": "leaf"}, {"thai": "ภูเขา", "english": "mountain"},
-            {"thai": "แม่น้ำ", "english": "river"},
-            # ร่างกาย
-            {"thai": "หัว", "english": "head"}, {"thai": "ตา", "english": "eye"},
-            {"thai": "หู", "english": "ear"}, {"thai": "จมูก", "english": "nose"},
-            {"thai": "ปาก", "english": "mouth"}, {"thai": "ฟัน", "english": "tooth"},
-            {"thai": "มือ", "english": "hand"}, {"thai": "แขน", "english": "arm"},
-            {"thai": "ขา", "english": "leg"}, {"thai": "เท้า", "english": "foot"},
-            {"thai": "ผม", "english": "hair"},
-            # สี
-            {"thai": "สีแดง", "english": "red"}, {"thai": "สีน้ำเงิน", "english": "blue"},
-            {"thai": "สีเขียว", "english": "green"}, {"thai": "สีเหลือง", "english": "yellow"},
-            {"thai": "สีดำ", "english": "black"}, {"thai": "สีขาว", "english": "white"},
-            {"thai": "สีชมพู", "english": "pink"}, {"thai": "สีส้ม", "english": "orange"},
-            {"thai": "สีม่วง", "english": "purple"}, {"thai": "สีน้ำตาล", "english": "brown"},
-            # อาหาร
-            {"thai": "ข้าว", "english": "rice"}, {"thai": "ขนมปัง", "english": "bread"},
-            {"thai": "นม", "english": "milk"}, {"thai": "ไข่", "english": "egg"},
-            {"thai": "เนื้อสัตว์", "english": "meat"}, {"thai": "เค้ก", "english": "cake"},
-            {"thai": "น้ำตาล", "english": "sugar"}, {"thai": "เกลือ", "english": "salt"},
-            # คำกริยา (Verbs)
-            {"thai": "วิ่ง", "english": "run"}, {"thai": "เดิน", "english": "walk"},
-            {"thai": "กระโดด", "english": "jump"}, {"thai": "นอน", "english": "sleep"},
-            {"thai": "กิน", "english": "eat"}, {"thai": "ดื่ม", "english": "drink"},
-            {"thai": "อ่าน", "english": "read"}, {"thai": "เขียน", "english": "write"},
-            {"thai": "ฟัง", "english": "listen"}, {"thai": "พูด", "english": "speak"},
-            {"thai": "เล่น", "english": "play"},
-            # คำคุณศัพท์ (Adjectives)
-            {"thai": "ใหญ่", "english": "big"}, {"thai": "เล็ก", "english": "small"},
-            {"thai": "สูง", "english": "tall"}, {"thai": "สั้น", "english": "short"},
-            {"thai": "ยาว", "english": "long"}, {"thai": "เร็ว", "english": "fast"},
-            {"thai": "ช้า", "english": "slow"}, {"thai": "ดี", "english": "good"},
-            {"thai": "แย่", "english": "bad"}, {"thai": "ร้อน", "english": "hot"},
-            {"thai": "เย็น", "english": "cold"}
-        ]
-        self.current_word = random.choice(self.vocab_list)
-
+        # ==========================================
+        # การสร้างหน้าจอ UI วางไว้ใน __init__ ให้ถูกต้อง
+        # ==========================================
         vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
 
         time_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.15))
@@ -368,11 +392,10 @@ class MainLayout(FloatLayout):
         vbox.add_widget(game_layout)
 
         # ==========================================
-        # ร้านค้าสกิล (แสดงผลด้านล่างจอ 3 อันเรียงกัน)
+        # ร้านค้าสกิล
         # ==========================================
         shop_layout = BoxLayout(size_hint=(0.98, None), height='130sp', spacing=15, pos_hint={'center_x': 0.5})
         
-        # --- สกิล 1: เพิ่มเลือด (50 แต้ม) ---
         skill1_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_heal = ImageButton(source='assets/images/add_score.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_heal.bind(on_release=lambda x: [self.sound.play_click(), self.buy_life(x)])
@@ -381,7 +404,6 @@ class MainLayout(FloatLayout):
         skill1_box.add_widget(btn_heal)
         skill1_box.add_widget(lbl_heal)
 
-        # --- สกิล 2: คำใบ้ (20 แต้ม) ---
         skill2_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_hint = ImageButton(source='assets/images/hint.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_hint.bind(on_release=lambda x: [self.sound.play_click(), self.get_hint(x)])
@@ -390,7 +412,6 @@ class MainLayout(FloatLayout):
         skill2_box.add_widget(btn_hint)
         skill2_box.add_widget(lbl_hint)
 
-        # --- สกิล 3: ลดความเร็ว (30 แต้ม) ---
         skill3_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_slow = ImageButton(source='assets/images/escape.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_slow.bind(on_release=lambda x: [self.sound.play_click(), self.buy_slow_time(x)])
@@ -416,7 +437,6 @@ class MainLayout(FloatLayout):
 
         self.add_widget(vbox)
 
-        
         self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
         self.ghost.is_paused = True
         self.add_widget(self.ghost)
@@ -426,7 +446,7 @@ class MainLayout(FloatLayout):
         self.ghost.y = self.scooby.y
 
         # ==========================================
-        # 3. แก้ไข Pause Overlay (เลื่อนหลบไปนอกจอก่อน)
+        # Pause Overlay 
         # ==========================================
         self.pause_overlay = FloatLayout(size_hint=(1, 1), opacity=0, pos_hint={'y': 10})
         self.pause_overlay.disabled = True
@@ -456,6 +476,42 @@ class MainLayout(FloatLayout):
         
         self.pause_overlay.add_widget(pause_box)
         self.add_widget(self.pause_overlay)
+
+    def load_vocabulary(self, category_name, level):
+        """อ่านไฟล์ JSON แปลงหมวดหมู่ และโหลดลง pool"""
+        cat_map = {
+            'สัตว์และธรรมชาติ': 'nature',
+            'ชีวิตประจำวัน': 'daily',
+            'วิทยาศาสตร์ ไอที และวิศวกรรม': 'science_it'
+        }
+        json_key = cat_map.get(category_name, 'daily')
+        
+        try:
+            with open('vocab.data.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # โหลดคำศัพท์ทั้งหมดของหมวดและระดับนั้นๆ
+            self.vocab_pool = list(data[json_key][str(level)])
+            self.total_words_in_level = len(self.vocab_pool)
+            
+            # สลับตำแหน่งคำศัพท์
+            random.shuffle(self.vocab_pool)
+        except Exception as e:
+            print(f"Error loading JSON: {e}")
+            self.vocab_pool = [{"thai": "ข้อผิดพลาดไฟล์", "english": "error"}]
+
+    def next_word(self):
+        if not self.vocab_pool:
+            self.word_label.text = "เคลียร์ด่านแล้ว! (STAGE CLEAR)"
+            self.underscore_label.text = f"คะแนน: {self.logic.score}"
+            self.word_label.color = (0.2, 1, 0.2, 1)
+            self.answer_input.disabled = True
+            self.ghost.is_paused = True
+            return
+            
+        self.current_word = self.vocab_pool.pop()
+        self.answer_input.text = ""
+        self.update_ui()
 
     def on_screen_enter(self):
         Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
@@ -521,7 +577,6 @@ class MainLayout(FloatLayout):
         self.ghost.is_paused = False
         self.answer_input.disabled = False
         self.word_label.color = (1, 1, 1, 1)
-        self.next_word() 
 
     def _update_bg(self, instance, value):
         self.bg_rect.pos = instance.pos
@@ -552,11 +607,6 @@ class MainLayout(FloatLayout):
         underscores = ' '.join(['_'] * ans_len)
         self.underscore_label.text = underscores
 
-    def next_word(self):
-        self.current_word = random.choice(self.vocab_list)
-        self.answer_input.text = ""
-        self.update_ui()
-
     def check_answer(self, instance):
         if self.hp.is_dead() or self.time_left <= 0 or self.is_paused:
             return  
@@ -565,7 +615,6 @@ class MainLayout(FloatLayout):
         if is_correct := self.logic.check_answer(user_ans, correct_ans):
             self.sound.play_correct()
             self.time_left = 16.0
-            self.time_speed = 1.0
             self.ghost.reset()
             if self.time_left > self.time_bar.max:
                 self.time_bar.max = self.time_left
@@ -600,7 +649,6 @@ class MainLayout(FloatLayout):
                 self.logic.score -= cost
                 self.time_speed -= 0.1  
                 self.update_ui()
-    
 
     def test_add_score(self, instance):
         self.logic.score += 10
@@ -652,8 +700,10 @@ class MainLayout(FloatLayout):
         self.time_speed = 1.0
         self.time_bar.value = self.time_left
 
-    def start_game(self):
-        # รีเซ็ตค่าทุกอย่างใหม่ก่อนเริ่มจริง
+    def start_game(self, category, level):
+        # รีเซ็ตค่าและโหลดคำศัพท์ตามโหมดที่เลือก
+        self.load_vocabulary(category, level)
+
         self.game_started = True
         self.time_left = 16.0
         self.time_speed = 1.0
@@ -669,6 +719,7 @@ class MainLayout(FloatLayout):
         # ปล่อยผี!
         self.ghost.reset()
         self.ghost.is_paused = False
+        self.next_word()
         self.update_ui()
 
 class VocabGameApp(App):
@@ -686,10 +737,7 @@ class VocabGameApp(App):
         pass
 
     def build(self):
-        # โหลด SoundManager
         self.sound = SoundManager()
-
-        # โหลดเพลงพื้นหลัง
         self.bg_music = SoundLoader.load("assets/sound/music/theme.mp3")
         if self.bg_music:
             self.bg_music.loop = True
@@ -700,12 +748,14 @@ class VocabGameApp(App):
         
         menu_screen = MainMenuScreen(name='main_menu')
         options_screen = OptionsScreen(name='options_screen')
+        select_level_screen = SelectLevelScreen(name='select_level') 
         game_screen = GameScreen(name='game_screen')
         
         game_layout = MainLayout()
         game_screen.add_widget(game_layout)
         
         sm.add_widget(menu_screen)
+        sm.add_widget(select_level_screen) 
         sm.add_widget(options_screen)
         sm.add_widget(game_screen)
         
@@ -725,14 +775,13 @@ class VocabGameApp(App):
     def back_from_options(self):
         self.root.current = self.previous_screen
 
-    def start_game_from_menu(self):
+    def start_game_with_settings(self, category, level):
         self.root.current = 'game_screen'
-        # ค้นหา MainLayout ใน game_screen
         game_screen = self.root.get_screen('game_screen')
         for child in game_screen.children:
             if isinstance(child, MainLayout):
-                child.reset_entire_game() # ล้างค่าเก่า
-                child.start_game()        # สั่งเริ่มจริงๆ ที่นี่
+                child.reset_entire_game() 
+                child.start_game(category, level)
 
 if __name__ == "__main__":
     VocabGameApp().run()
