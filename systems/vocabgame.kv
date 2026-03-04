@@ -82,15 +82,41 @@
             # --- ปุ่มร้านค้า (เอามาไว้ด้านบนสคูบี้) ---
             BoxLayout:
                 size_hint_y: 0.2
-                spacing: 10
-                Button:
-                    text: 'หาเบาะแส'
-                    background_normal: ''
-                    background_color: 0.1, 0.7, 0.7, 1
-                Button:
-                    text: 'ขึ้นรถหนีผี!'
-                    background_normal: ''
-                    background_color: 0.5, 0.2, 0.6, 1
+                spacing: dp(20)
+                padding: dp(10)
+
+                # เพิ่มคะแนน (แสนก)
+                ImageButton:
+                    source: 'assets/images/add_score.png'
+                    size_hint: None, None
+                    size: dp(80), dp(80)
+                    allow_stretch: True
+                    keep_ratio: True
+                    on_release:
+                        app.use_add_score()
+                    opacity: 0.7 if self.state == 'down' else 1
+
+                # ใบ้
+                ImageButton:
+                    source: 'assets/images/hint.png'
+                    size_hint: None, None
+                    size: dp(80), dp(80)
+                    allow_stretch: True
+                    keep_ratio: True
+                    on_release:
+                        app.use_hint()
+                    opacity: 0.7 if self.state == 'down' else 1
+
+                # เอสเคป
+                ImageButton:
+                    source: 'assets/images/escape.png'
+                    size_hint: None, None
+                    size: dp(80), dp(80)
+                    allow_stretch: True
+                    keep_ratio: True
+                    on_release:
+                        app.use_escape()
+                    opacity: 0.7 if self.state == 'down' else 11
 
             # เติมช่องว่างด้านล่างเพื่อให้ Layout สมดุล
             Widget:

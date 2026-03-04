@@ -21,8 +21,8 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window 
 from kivy.uix.behaviors import ButtonBehavior
-
-
+from kivy.uix.image import Image
+from kivy.metrics import dp
 
 Window.minimum_width = 360
 Window.minimum_height = 640
@@ -190,9 +190,11 @@ Builder.load_string('''
 # ==========================================
 # 2. จัดการหน้าจอต่างๆ (แก้ไขปัญหาพิมพ์ไม่ได้ตรงนี้)
 # ==========================================
+
 class MainMenuScreen(Screen):
     pass
-
+class ImageButton(ButtonBehavior, Image):
+    pass
 class OptionsScreen(Screen):
     pass
 
@@ -365,17 +367,41 @@ class MainLayout(FloatLayout):
         game_layout.add_widget(Widget(size_hint=(1, 0.05))) 
         vbox.add_widget(game_layout)
 
-        shop_layout = BoxLayout(size_hint=(0.98, None), height='80sp', spacing=18, pos_hint={'center_x': 0.5})
-        buy_life_btn = Factory.SmoothButton(text="+1 Snack (50)", font_size='22sp', bg_color=(0.8, 0.5, 0.3, 1), bold=True) 
-        buy_life_btn.bind(on_press=self.buy_life)
-        hint_btn = Factory.SmoothButton(text="Hint (20)", font_size='22sp', bg_color=(0.2, 0.8, 0.8, 1), bold=True) 
-        hint_btn.bind(on_press=self.get_hint)
-        slow_time_btn = Factory.SmoothButton(text="Escape! (30)", font_size='22sp', bg_color=(0.6, 0.3, 0.7, 1), bold=True) 
-        slow_time_btn.bind(on_press=self.buy_slow_time)
+        # ==========================================
+        # ร้านค้าสกิล (แสดงผลด้านล่างจอ 3 อันเรียงกัน)
+        # ==========================================
+        shop_layout = BoxLayout(size_hint=(0.98, None), height='130sp', spacing=15, pos_hint={'center_x': 0.5})
         
-        shop_layout.add_widget(buy_life_btn)
-        shop_layout.add_widget(hint_btn)
-        shop_layout.add_widget(slow_time_btn)
+        # --- สกิล 1: เพิ่มเลือด (50 แต้ม) ---
+        skill1_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
+        btn_heal = ImageButton(source='assets/images/add_score.png', size_hint=(1, 0.65), allow_stretch=True)
+        btn_heal.bind(on_release=lambda x: [self.sound.play_click(), self.buy_life(x)])
+        lbl_heal = Label(text="เพิ่มเลือด\n 50 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(1, 0.8, 0.2, 1))
+        lbl_heal.bind(size=lbl_heal.setter('text_size')) 
+        skill1_box.add_widget(btn_heal)
+        skill1_box.add_widget(lbl_heal)
+
+        # --- สกิล 2: คำใบ้ (20 แต้ม) ---
+        skill2_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
+        btn_hint = ImageButton(source='assets/images/hint.png', size_hint=(1, 0.65), allow_stretch=True)
+        btn_hint.bind(on_release=lambda x: [self.sound.play_click(), self.get_hint(x)])
+        lbl_hint = Label(text="คำใบ้\n 20 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.4, 0.9, 1, 1))
+        lbl_hint.bind(size=lbl_hint.setter('text_size'))
+        skill2_box.add_widget(btn_hint)
+        skill2_box.add_widget(lbl_hint)
+
+        # --- สกิล 3: ลดความเร็ว (30 แต้ม) ---
+        skill3_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
+        btn_slow = ImageButton(source='assets/images/escape.png', size_hint=(1, 0.65), allow_stretch=True)
+        btn_slow.bind(on_release=lambda x: [self.sound.play_click(), self.buy_slow_time(x)])
+        lbl_slow = Label(text="หนีผี! \n 30 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.8, 0.5, 1, 1))
+        lbl_slow.bind(size=lbl_slow.setter('text_size'))
+        skill3_box.add_widget(btn_slow)
+        skill3_box.add_widget(lbl_slow)
+
+        shop_layout.add_widget(skill1_box)
+        shop_layout.add_widget(skill2_box)
+        shop_layout.add_widget(skill3_box)
         vbox.add_widget(shop_layout)
 
         test_layout = BoxLayout(size_hint=(0.9, None), height='60sp', spacing=18, pos_hint={'center_x': 0.5})
@@ -574,6 +600,7 @@ class MainLayout(FloatLayout):
                 self.logic.score -= cost
                 self.time_speed -= 0.1  
                 self.update_ui()
+    
 
     def test_add_score(self, instance):
         self.logic.score += 10
@@ -648,6 +675,15 @@ class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
     bg_music = None
     previous_screen = 'main_menu' 
+    
+    def use_add_score(self):
+        pass
+
+    def use_hint(self):
+        pass
+
+    def use_escape(self):
+        pass
 
     def build(self):
         # โหลด SoundManager
