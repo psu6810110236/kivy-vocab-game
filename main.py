@@ -603,9 +603,15 @@ class MainLayout(FloatLayout):
         self.score_label.text = f"Score: {self.logic.score}"
         self.combo_label.text = f"Combo: x{self.logic.combo_multiplier}"
         self.word_label.text = f"ปริศนา: {self.current_word['thai']}"
-        ans_len = len(self.current_word['english'])
-        underscores = ' '.join(['_'] * ans_len)
-        self.underscore_label.text = underscores
+        english_word = self.current_word['english']
+        underscores_list = []
+        for char in english_word:
+            if char == ' ':
+                underscores_list.append('   ') # ถ้าเป็นช่องว่าง ให้เว้นช่องให้กว้างหน่อย
+            else:
+                underscores_list.append('_')   # ถ้าเป็นตัวอักษร ให้ใส่ขีดล่าง
+                
+        self.underscore_label.text = ' '.join(underscores_list)
 
     def check_answer(self, instance):
         if self.hp.is_dead() or self.time_left <= 0 or self.is_paused:
