@@ -518,17 +518,16 @@ class MainLayout(FloatLayout):
         self.ghost.y = self.scooby.y
 
         # ==========================================
-        # Pause Overlay
+        # Pause Overlay 
         # ==========================================
         self.pause_overlay = FloatLayout(size_hint=(1, 1), opacity=0, pos_hint={'y': 10})
         self.pause_overlay.disabled = True
         
         with self.pause_overlay.canvas.before:
-            Color(0.1, 0.05, 0.15, 0.85) # โทนม่วงเข้มโปร่งแสง ให้ดูมีมิติกว่าสีดำทื่อๆ
+            Color(0.1, 0.05, 0.15, 0.85) # โทนม่วงเข้มโปร่งแสง
             self.pause_bg = Rectangle(size=self.size, pos=self.pos)
         self.pause_overlay.bind(size=self._update_pause_bg, pos=self._update_pause_bg)
 
-        # ใช้ CardBox เป็นพื้นหลังกล่องเมนู Pause ให้อยู่ตรงกลางจอ
         pause_box = Factory.CardBox(orientation='vertical', size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5}, padding=dp(25), spacing=dp(20))
         
         pause_label = Label(
@@ -536,13 +535,12 @@ class MainLayout(FloatLayout):
             font_size='50sp', 
             font_name='LEELAUIB.TTF', 
             bold=True, 
-            color=(1, 0.85, 0.1, 1), # สีเหลืองทอง
+            color=(1, 0.85, 0.1, 1), 
             outline_width=3, 
-            outline_color=(0.3, 0.1, 0.4, 1), # ขอบสีม่วงเข้ม
+            outline_color=(0.3, 0.1, 0.4, 1), 
             size_hint_y=0.35
         )
         
-        # ใส่ปุ่มไว้ใน BoxLayout ย่อย เพื่อให้ตั้งค่าความกว้าง (Margin) ซ้าย-ขวาได้สวยงาม ไม่ยืดติดขอบกล่อง
         button_layout = BoxLayout(orientation='vertical', spacing=dp(15), size_hint_y=0.65, size_hint_x=0.9, pos_hint={'center_x': 0.5})
         
         resume_btn = Factory.SmoothButton(
@@ -870,7 +868,6 @@ class MainLayout(FloatLayout):
             
             # เด้งข้อความคำชม (อยู่เหนือช่องพิมพ์)
             self.add_widget(FloatingText(rating_text, (self.width/2 - dp(60), self.answer_input.y + dp(60)), color=r_color))
-            # ---------------------------
             
             # เด้งคะแนนและคอมโบ
             score_diff = self.logic.score - old_score
@@ -878,8 +875,15 @@ class MainLayout(FloatLayout):
             self.pop_combo_text()
             self.pop_score_text()
             
-            # กระพริบสีเขียว
-            anim = Animation(color=(0.2, 1, 0.2, 1), duration=0.1) + Animation(color=(1, 1, 1, 1), duration=0.2)
+            # --- 2. เอฟเฟกต์ Fever Mode ---
+            if self.logic.combo_multiplier >= 5:
+                # กระพริบสีทองเมื่อคอมโบสูง
+                self.flash_screen((1, 0.8, 0.1, 0.3))
+                anim = Animation(color=(1, 0.8, 0.1, 1), duration=0.1) + Animation(color=(1, 1, 1, 1), duration=0.2)
+            else:
+                # กระพริบสีเขียวปกติ
+                anim = Animation(color=(0.2, 1, 0.2, 1), duration=0.1) + Animation(color=(1, 1, 1, 1), duration=0.2)
+                
             anim.start(self.word_label)
             
             self.time_left = 16.0
@@ -889,11 +893,20 @@ class MainLayout(FloatLayout):
             self.time_bar.value = self.time_left
             self.next_word()
             Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
+            
         else:
             self.answer_input.text = "" 
+            
+            # --- 3. ระบบตอบผิดโดนลงโทษ (Miss Penalty) ---
             # สั่นจอเบาๆ เวลาตอบผิด
             anim_shake = Animation(x=self.answer_input.x-10, duration=0.05) + Animation(x=self.answer_input.x+10, duration=0.05) + Animation(x=self.answer_input.x, duration=0.05)
             anim_shake.start(self.answer_input)
+            
+            # ขึ้นข้อความ MISS สีแดง
+            self.add_widget(FloatingText("MISS!", (self.width/2 - dp(40), self.answer_input.y + dp(60)), color=(1, 0.2, 0.2, 1)))
+            
+            # รีเซ็ต Combo
+            self.logic.combo_multiplier = 1
             
             if self.time_speed > 1.0:
                 self.time_speed = 1.0 
