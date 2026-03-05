@@ -763,6 +763,7 @@ class MainLayout(FloatLayout):
         if hint:
             self.answer_input.text = hint
             self.update_ui()
+            self.answer_input.focus = True
 
     def buy_slow_time(self, instance):
         cost = 30
