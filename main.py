@@ -115,11 +115,10 @@ UI_KV = '''
             on_release:
                 app.sound.play_click()
                 app.stop()
-'''
-Builder.load_string(UI_KV)
 
-# --- โหลดหน้าจออื่นๆ ตามโค้ดเดิม ---
-Builder.load_string('''
+# ==========================================
+# Commit 8: ui: build OptionsScreen layout
+# ==========================================
 <OptionsScreen>:
     canvas.before:
         Rectangle:
@@ -201,7 +200,11 @@ Builder.load_string('''
             
             Widget:
                 size_hint_y: 0.3
+'''
+Builder.load_string(UI_KV)
 
+# --- โหลดหน้าจออื่นๆ ตามโค้ดเดิม ---
+Builder.load_string('''
 <SelectLevelScreen>:
     canvas.before:
         Color:
