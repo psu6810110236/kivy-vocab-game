@@ -43,7 +43,11 @@ class GameLogic:
         """ระบบ Hint (หักคะแนนเพื่อดูตัวอักษร 2 ตัวแรก)"""
         if self.score >= cost:
             self.score -= cost
-            if len(word) > 2:
-                return f"{word[:2]}{'_' * (len(word) - 2)}"
-            return f"{word[0]}_"
+            word_len = len(word)
+            if word_len <= 3:
+                return word[:1] 
+            elif word_len <= 5:
+                return word[:2]  
+            else:
+                return word[:3] 
         return None

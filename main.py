@@ -440,7 +440,7 @@ class MainLayout(FloatLayout):
             padding=[10, 20] 
         )
         self.answer_input.bind(on_text_validate=self.check_answer) 
-        
+        self.answer_input.bind(text=self.update_preview_answer)
         self.submit_btn = Factory.SmoothButton(
             text="SOLVE MYSTERY!", 
             font_size='30sp',        
@@ -849,6 +849,7 @@ class MainLayout(FloatLayout):
                 self.flash_shop_error()
 
     def get_hint(self, instance):
+<<<<<<< HEAD
         if self.logic.score >= 20:
             hint = self.logic.get_hint(self.current_word["english"], cost=20)
             if hint:
@@ -859,6 +860,13 @@ class MainLayout(FloatLayout):
                 self.update_ui()
         else:
             self.flash_shop_error()
+=======
+        hint = self.logic.get_hint(self.current_word["english"], cost=20)
+        if hint:
+            self.answer_input.text = hint
+            self.update_ui()
+            self.answer_input.focus = True
+>>>>>>> e7d8c01631f7bfd70abdf04001b9995319e696d8
 
     def buy_slow_time(self, instance):
         cost = 30
@@ -979,6 +987,23 @@ class MainLayout(FloatLayout):
             self.submit_btn.disabled = False
         self.next_word()
         self.update_ui()
+
+    def update_preview_answer(self, instance, value):
+        english_word = self.current_word['english']
+        typed = value.lower()
+
+        preview = []
+
+        for i, char in enumerate(english_word):
+            if char == ' ':
+                preview.append(' ')
+            elif i < len(typed):
+                preview.append(f"[color=00ff00]{typed[i]}[/color]")
+            else:
+                preview.append('_')
+
+        self.underscore_label.markup = True
+        self.underscore_label.text = ' '.join(preview)
 
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
