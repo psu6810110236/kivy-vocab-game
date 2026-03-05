@@ -351,14 +351,17 @@ from systems.sound_manager import SoundManager
 from systems.hp_system import HPSystem
 from systems.game_logic import GameLogic 
 
+# ==========================================
+# Commit 10: ui: init MainLayout and game backgrounds
+# ==========================================
 class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.game_started = False
+        self.is_paused = False 
+        
         self.timer_event = None
         self.bind(size=self.on_resize)
-        
-        self.is_paused = False 
         Window.bind(on_keyboard=self._on_keyboard)
         
         self.vocab_pool = []
@@ -386,6 +389,10 @@ class MainLayout(FloatLayout):
             # ----------------------------------
             
         self.bind(size=self._update_bg, pos=self._update_bg)
+        
+        # เพิ่ม main_vbox ตาม Commit 10
+        self.main_vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
+        self.add_widget(self.main_vbox)
 
         self.sound = App.get_running_app().sound
         self.hp = HPSystem(max_hp=3)
@@ -397,14 +404,12 @@ class MainLayout(FloatLayout):
         # ==========================================
         # การสร้างหน้าจอ UI วางไว้ใน __init__ ให้ถูกต้อง
         # ==========================================
-        vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
-
         time_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.15))
         self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(1, 0.6, 0.2, 1))
         self.time_bar = ProgressBar(max=60, value=self.time_left, size_hint=(0.8, 1), pos_hint={'center_x': 0.5})
         time_layout.add_widget(self.time_label)
         time_layout.add_widget(self.time_bar)
-        vbox.add_widget(time_layout)
+        self.main_vbox.add_widget(time_layout)
 
         status_card = Factory.CardBox(size_hint=(0.92, 0.15), padding=12, pos_hint={'center_x': 0.5})
         self.hp_label = Label(text=f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}", font_size='26sp', color=(0.9, 0.6, 0.3, 1), bold=True)
@@ -413,7 +418,7 @@ class MainLayout(FloatLayout):
         status_card.add_widget(self.hp_label)
         status_card.add_widget(self.score_label)
         status_card.add_widget(self.combo_label)
-        vbox.add_widget(status_card)
+        self.main_vbox.add_widget(status_card)
 
         game_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.5), spacing=15)
         self.word_label = Label(text=f"ปริศนา: {self.current_word['thai']}", font_size='50sp', bold=True, color=(1, 1, 1, 1), size_hint=(1, 0.25))
@@ -453,7 +458,7 @@ class MainLayout(FloatLayout):
         game_layout.add_widget(self.submit_btn)
         
         game_layout.add_widget(Widget(size_hint=(1, 0.05))) 
-        vbox.add_widget(game_layout)
+        self.main_vbox.add_widget(game_layout)
 
         # ==========================================
         # ร้านค้าสกิล
@@ -487,7 +492,7 @@ class MainLayout(FloatLayout):
         shop_layout.add_widget(skill1_box)
         shop_layout.add_widget(skill2_box)
         shop_layout.add_widget(skill3_box)
-        vbox.add_widget(shop_layout)
+        self.main_vbox.add_widget(shop_layout)
 
         test_layout = BoxLayout(size_hint=(0.9, None), height='60sp', spacing=18, pos_hint={'center_x': 0.5})
         test_add_btn = Factory.SmoothButton(text="[Test] +10 Score", font_size='18sp', bg_color=(0.3, 0.6, 0.3, 1)) 
@@ -497,9 +502,7 @@ class MainLayout(FloatLayout):
 
         test_layout.add_widget(test_add_btn)
         test_layout.add_widget(test_reduce_btn)
-        vbox.add_widget(test_layout)
-
-        self.add_widget(vbox)
+        self.main_vbox.add_widget(test_layout)
 
         self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
         self.ghost.is_paused = True
