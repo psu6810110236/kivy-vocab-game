@@ -200,11 +200,10 @@ UI_KV = '''
             
             Widget:
                 size_hint_y: 0.3
-'''
-Builder.load_string(UI_KV)
 
-# --- โหลดหน้าจออื่นๆ ตามโค้ดเดิม ---
-Builder.load_string('''
+# ==========================================
+# Commit 9: ui: build SelectLevelScreen layout
+# ==========================================
 <SelectLevelScreen>:
     canvas.before:
         Color:
@@ -321,7 +320,9 @@ Builder.load_string('''
                     on_release: 
                         app.sound.play_click()
                         app.start_game_with_settings(category_spinner.text, level_spinner.text)
-''')
+'''
+Builder.load_string(UI_KV)
+
 
 # ==========================================
 # Commit 6: feat: setup screen manager and base screens
