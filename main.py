@@ -23,8 +23,7 @@ from kivy.core.window import Window
 from kivy.uix.behaviors import ButtonBehavior
 import json
 from kivy.uix.spinner import Spinner
-from kivy.uix.screenmanager import Screen
-from kivy.app import App
+
 Window.minimum_width = 360
 Window.minimum_height = 640
 
@@ -137,6 +136,8 @@ Builder.load_string('''
             color: 1, 0.8, 0.2, 1
             size_hint_y: 0.3
             bold: True
+            outline_width: 2
+            outline_color: 0, 0, 0, 1
         
         BoxLayout:
             orientation: 'horizontal'
@@ -159,6 +160,8 @@ Builder.load_string('''
                 font_size: '35sp'
                 font_name: 'LEELAUIB.TTF'
                 size_hint_x: 0.6
+                outline_width: 2
+                outline_color: 0, 0, 0, 1
                 
             SmoothButton:
                 text: '+'
@@ -191,84 +194,119 @@ Builder.load_string('''
 <SelectLevelScreen>:
     canvas.before:
         Color:
-            rgba: 0.1, 0.1, 0.2, 1
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'assets/images/bg_scooby_doo.png'
+            source: 'assets/images/menu_bg.png' # ใช้รูปพื้นหลังเหมือนหน้าแรก
         Color:
-            rgba: 0, 0, 0, 0.7
+            rgba: 0, 0, 0, 0.5 # หรี่แสงลงนิดนึงให้อ่านหน้าง่ายขึ้น
         Rectangle:
             pos: self.pos
             size: self.size
 
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 50
-        spacing: 30
-        
-        Label:
-            text: 'เลือกหมวดหมู่และระดับ'
-            font_size: '45sp'
-            font_name: 'LEELAUIB.TTF'
-            color: 1, 0.8, 0.2, 1
-            size_hint_y: 0.3
-            bold: True
-            
+    FloatLayout:
+        # กล่องตรงกลาง
         BoxLayout:
-            orientation: 'horizontal'
-            spacing: 20
-            size_hint_y: 0.2
-            Label:
-                text: 'หมวดหมู่:'
-                font_size: '30sp'
-                font_name: 'LEELAUIB.TTF'
-            Spinner:
-                id: category_spinner
-                text: 'สัตว์และธรรมชาติ'
-                values: ['สัตว์และธรรมชาติ', 'ชีวิตประจำวัน', 'วิทยาศาสตร์ ไอที และวิศวกรรม']
-                font_name: 'LEELAUIB.TTF'
-                font_size: '22sp'
-                background_color: 0.2, 0.6, 0.8, 1
+            orientation: 'vertical'
+            size_hint: 0.85, 0.65
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: dp(20)
+            spacing: dp(15)
+            
+            canvas.before:
+                Color:
+                    rgba: 0.15, 0.05, 0.25, 0.9 # สีม่วงเข้ม
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [25]
+                Color:
+                    rgba: 0.6, 0.8, 0.2, 1 # ขอบสีเขียว
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, 25]
+                    width: 2.5
 
-        BoxLayout:
-            orientation: 'horizontal'
-            spacing: 20
-            size_hint_y: 0.2
             Label:
-                text: 'ความยาก:'
-                font_size: '30sp'
+                text: 'เลือกหมวดหมู่และระดับ'
+                font_size: '35sp'
                 font_name: 'LEELAUIB.TTF'
-            Spinner:
-                id: level_spinner
-                text: '1'
-                values: ['1', '2', '3', '4', '5']
-                font_name: 'LEELAUIB.TTF'
-                font_size: '24sp'
-                background_color: 0.8, 0.4, 0.2, 1
-        
-        Widget:
-            size_hint_y: 0.1
+                color: 1, 0.7, 0.1, 1 # สีส้มทอง
+                size_hint_y: 0.2
+                bold: True
+                outline_width: 2
+                outline_color: 0, 0, 0, 1
+                
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(5)
+                size_hint_y: 0.55
+                
+                Label:
+                    text: 'หมวดหมู่ (Category)'
+                    font_size: '22sp'
+                    font_name: 'LEELAUIB.TTF'
+                    size_hint_y: 0.4
+                    color: 1, 1, 1, 1
+                    
+                Spinner:
+                    id: category_spinner
+                    text: 'สัตว์และธรรมชาติ'
+                    values: ['สัตว์และธรรมชาติ', 'ชีวิตประจำวัน', 'วิทยาศาสตร์ ไอที และวิศวกรรม']
+                    font_name: 'LEELAUIB.TTF'
+                    font_size: '20sp'
+                    size_hint_y: 0.6
+                    background_normal: ''
+                    background_color: 0.9, 0.5, 0.1, 1 # สีส้ม
+                    color: 0, 0, 0, 1
+                    
+                Widget:
+                    size_hint_y: 0.1
+                    
+                Label:
+                    text: 'ความยาก (Level)'
+                    font_size: '22sp'
+                    font_name: 'LEELAUIB.TTF'
+                    size_hint_y: 0.4
+                    color: 1, 1, 1, 1
+                    
+                Spinner:
+                    id: level_spinner
+                    text: '1'
+                    values: ['1', '2', '3', '4', '5']
+                    font_name: 'LEELAUIB.TTF'
+                    font_size: '20sp'
+                    size_hint_y: 0.6
+                    background_normal: ''
+                    background_color: 0.5, 0.2, 0.6, 1 # สีม่วง
+                    color: 1, 1, 1, 1
             
-        BoxLayout:
-            size_hint_y: 0.2
-            spacing: 20
-            SmoothButton:
-                text: 'กลับ (Back)'
-                bg_color: 0.5, 0.5, 0.5, 1
-                font_name: 'LEELAUIB.TTF'
-                font_size: '25sp'
-                on_release: 
-                    app.sound.play_click()
-                    app.root.current = 'main_menu'
-            SmoothButton:
-                text: 'เริ่มเกม (Start)'
-                bg_color: 0.2, 0.8, 0.2, 1
-                font_name: 'LEELAUIB.TTF'
-                font_size: '25sp'
-                on_release: 
-                    app.sound.play_click()
-                    app.start_game_with_settings(category_spinner.text, level_spinner.text)
+            Widget:
+                size_hint_y: 0.05
+                
+            BoxLayout:
+                size_hint_y: 0.25
+                spacing: dp(15)
+                
+                SmoothButton:
+                    text: 'กลับ (Back)'
+                    bg_color: 0.8, 0.2, 0.2, 1 # สีแดง
+                    font_name: 'LEELAUIB.TTF'
+                    font_size: '22sp'
+                    on_release: 
+                        app.sound.play_click()
+                        app.root.current = 'main_menu'
+                        
+                SmoothButton:
+                    text: 'เริ่มเกม (Start)'
+                    bg_color: 0.55, 0.9, 0.2, 1 # สีเขียว
+                    color: 0.1, 0.2, 0.05, 1
+                    font_name: 'LEELAUIB.TTF'
+                    font_size: '22sp'
+                    bold: True
+                    on_release: 
+                        app.sound.play_click()
+                        app.start_game_with_settings(category_spinner.text, level_spinner.text)
 ''')
 
 # ==========================================
@@ -279,6 +317,7 @@ class MainMenuScreen(Screen):
     def on_enter(self, *args):
         app = App.get_running_app()
         app.sound.play_menu_bgm()
+
 class OptionsScreen(Screen):
     pass
 
