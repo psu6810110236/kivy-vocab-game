@@ -390,20 +390,19 @@ class MainLayout(FloatLayout):
             
         self.bind(size=self._update_bg, pos=self._update_bg)
         
-        # เพิ่ม main_vbox ตาม Commit 10
         self.main_vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
-        self.add_widget(self.main_vbox)
+        
 
         self.sound = App.get_running_app().sound
         self.hp = HPSystem(max_hp=3)
         self.logic = GameLogic(self.hp)
 
+        # ==========================================
+        # Commit 11: ui: add status bar to MainLayout
+        # ==========================================
         self.time_left = 16.0  
         self.time_speed = 1.00  
 
-        # ==========================================
-        # การสร้างหน้าจอ UI วางไว้ใน __init__ ให้ถูกต้อง
-        # ==========================================
         time_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.15))
         self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(1, 0.6, 0.2, 1))
         self.time_bar = ProgressBar(max=60, value=self.time_left, size_hint=(0.8, 1), pos_hint={'center_x': 0.5})
@@ -503,6 +502,8 @@ class MainLayout(FloatLayout):
         test_layout.add_widget(test_add_btn)
         test_layout.add_widget(test_reduce_btn)
         self.main_vbox.add_widget(test_layout)
+        
+        self.add_widget(self.main_vbox)
 
         self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
         self.ghost.is_paused = True
@@ -748,12 +749,18 @@ class MainLayout(FloatLayout):
         if self.hp.is_dead() or self.time_left <= 0 or self.is_paused:
             return  
         user_ans = self.answer_input.text.strip().lower() 
-        if not user_ans: # เพิ่ม 2 บรรทัดนี้: ถ้าว่างเปล่าให้เด้งออกไปเลย ไม่ตรวจ
+        if not user_ans:
             return
         correct_ans = self.current_word["english"].lower()
         is_correct = self.logic.check_answer(user_ans, correct_ans)
+        
         if is_correct:
             self.sound.play_correct()
+            # --- เพิ่ม Floating Text เมื่อตอบถูก ---
+            points = 10 * self.logic.combo_multiplier
+            ft = FloatingText(text=f"+{points}", start_pos=self.answer_input.pos, color=(0.2, 1, 0.2, 1))
+            self.add_widget(ft)
+            # ----------------------------------
             self.time_left = 16.0
             self.ghost.reset()
             if self.time_left > self.time_bar.max:
@@ -763,6 +770,10 @@ class MainLayout(FloatLayout):
             Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
         else:
             self.answer_input.text = "" 
+            # --- เพิ่ม Floating Text เมื่อตอบผิด ---
+            ft = FloatingText(text="WRONG!", start_pos=self.answer_input.pos, color=(1, 0.2, 0.2, 1))
+            self.add_widget(ft)
+            # ----------------------------------
             if self.time_speed > 1.0:
                 self.time_speed = 1.0 
             self.update_ui()
@@ -777,16 +788,21 @@ class MainLayout(FloatLayout):
                 Clock.schedule_once(lambda dt: setattr(self.word_label, 'color', (1, 1, 1, 1)), 0.5)
 
     def buy_life(self, instance):
-        # เช็คว่าเลือดปัจจุบันน้อยกว่าเลือดสูงสุดหรือเปล่า
         if self.hp.current_hp < self.hp.max_hp:
             if self.logic.buy_life(cost=50):
+                ft = FloatingText(text="+1 LIFE", start_pos=instance.parent.pos, color=(1, 0.5, 0, 1))
+                self.add_widget(ft)
                 self.update_ui()
 
     def get_hint(self, instance):
-        hint = self.logic.get_hint(self.current_word["english"], cost=20)
-        if hint:
-            self.answer_input.text = hint
-            self.update_ui()
+        # เช็คคะแนนก่อนลดจริงใน logic
+        if self.logic.score >= 20:
+            hint = self.logic.get_hint(self.current_word["english"], cost=20)
+            if hint:
+                ft = FloatingText(text="-20 SCORE", start_pos=instance.parent.pos, color=(0.4, 0.9, 1, 1))
+                self.add_widget(ft)
+                self.answer_input.text = hint
+                self.update_ui()
 
     def buy_slow_time(self, instance):
         cost = 30
@@ -824,6 +840,17 @@ class MainLayout(FloatLayout):
     def on_ghost_hit(self):
         if self.hp.is_dead() or getattr(self.ghost, 'is_paused', False) or self.is_paused:
             return
+            
+        # --- เพิ่ม เอฟเฟกต์หน้าจอกระพริบสีแดง ---
+        self.flash_color.a = 0.5
+        anim = Animation(a=0, duration=0.5)
+        anim.start(self.flash_color)
+        
+        # เพิ่ม Floating Text แจ้งเตือน
+        ft = FloatingText(text="OUCH! -1 SNACK", start_pos=self.scooby.pos, color=(1, 0, 0, 1))
+        self.add_widget(ft)
+        # ----------------------------------
+
         self.time_left = 0
         self.hp.take_damage()
         self.logic.combo_multiplier = 1
