@@ -257,13 +257,13 @@ Builder.load_string('''
 
             Label:
                 text: 'เลือกหมวดหมู่และระดับ'
-                font_size: '35sp'
+                font_size: '40sp'
                 font_name: 'LEELAUIB.TTF'
-                color: 1, 0.7, 0.1, 1 
+                color: 0.6, 0.8, 0.2, 1
                 size_hint_y: 0.2
                 bold: True
-                outline_width: 2
-                outline_color: 0, 0, 0, 1
+                outline_width: 3
+                outline_color: 0.2, 0.05, 0.3, 1
                 
             BoxLayout:
                 orientation: 'vertical'
@@ -474,7 +474,7 @@ class MainLayout(FloatLayout):
         vbox.add_widget(game_layout)
 
         # ==========================================
-        # ร้านค้าสกิล
+        # ร้านค้าสกิล 
         # ==========================================
         shop_layout = BoxLayout(size_hint=(0.98, None), height='130sp', spacing=15, pos_hint={'center_x': 0.5})
         
@@ -518,7 +518,7 @@ class MainLayout(FloatLayout):
         self.ghost.y = self.scooby.y
 
         # ==========================================
-        # Pause Overlay (ปรับปรุงใหม่ให้ดูเป็นป๊อปอัปเกม)
+        # Pause Overlay
         # ==========================================
         self.pause_overlay = FloatLayout(size_hint=(1, 1), opacity=0, pos_hint={'y': 10})
         self.pause_overlay.disabled = True
@@ -847,6 +847,31 @@ class MainLayout(FloatLayout):
         
         if is_correct:
             self.sound.play_correct()
+            
+            # --- 1. ระบบ Speed Bonus ---
+            speed_bonus = 0
+            rating_text = ""
+            r_color = (1, 1, 1, 1)
+            
+            if self.time_left >= 10:
+                speed_bonus = 30
+                rating_text = "PERFECT!"
+                r_color = (1, 0.8, 0.1, 1) # สีทอง
+            elif self.time_left >= 5:
+                speed_bonus = 15
+                rating_text = "GREAT!"
+                r_color = (0.2, 1, 0.2, 1) # สีเขียว
+            else:
+                speed_bonus = 5
+                rating_text = "GOOD!"
+                r_color = (0.4, 0.9, 1, 1) # สีฟ้า
+                
+            self.logic.score += speed_bonus # บวกโบนัสเข้าคะแนนจริง
+            
+            # เด้งข้อความคำชม (อยู่เหนือช่องพิมพ์)
+            self.add_widget(FloatingText(rating_text, (self.width/2 - dp(60), self.answer_input.y + dp(60)), color=r_color))
+            # ---------------------------
+            
             # เด้งคะแนนและคอมโบ
             score_diff = self.logic.score - old_score
             self.add_widget(FloatingText(f"+{score_diff} Score", (self.score_label.x, self.score_label.y)))
