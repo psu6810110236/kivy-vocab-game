@@ -16,7 +16,6 @@ from kivy.uix.widget import Widget
 import random
 from kivy.metrics import dp, sp
 from kivy.core.audio import SoundLoader
-from widgets.ghost import Ghost
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window 
@@ -25,38 +24,15 @@ import json
 from kivy.uix.spinner import Spinner
 from kivy.animation import Animation
 
+# (หากรันยังไม่ได้ ให้คอมเมนต์บรรทัดเหล่านี้ไว้ก่อนจนกว่าจะถึง Commit 19)
+# from widgets.ghost import Ghost
+# from systems.sound_manager import SoundManager
+# from systems.hp_system import HPSystem
+# from systems.game_logic import GameLogic
+from widgets.ghost import Ghost
+
 Window.minimum_width = 360
 Window.minimum_height = 640
-
-# ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
-LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF') 
-
-class ImageButton(ButtonBehavior, Image):
-    pass
-
-# ==========================================
-# Commit 1-5: คลาสสำหรับเอฟเฟกต์อักษรลอย (Floating Text)
-# ==========================================
-class FloatingText(Label):
-    def __init__(self, text, start_pos, color=(1, 1, 0, 1), **kwargs):
-        super().__init__(**kwargs)
-        self.text = text
-        self.font_size = '30sp'
-        self.bold = True
-        self.color = color
-        self.size_hint = (None, None)
-        self.pos = start_pos
-        self.outline_width = 2
-        self.outline_color = (0, 0, 0, 1)
-        
-        # อนิเมชันลอยขึ้นและจางหาย
-        anim = Animation(y=self.pos[1] + dp(100), opacity=0, duration=1.0, transition='out_quad')
-        anim.bind(on_complete=self.remove_me)
-        anim.start(self)
-
-    def remove_me(self, *args):
-        if self.parent:
-            self.parent.remove_widget(self)
 
 # ==========================================
 # 1. สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
@@ -90,7 +66,7 @@ Builder.load_string('''
 <CardBox@BoxLayout>:
     canvas.before:
         Color:
-            rgba: 0, 0, 0, 0.65  
+            rgba: 0, 0, 0, 0.65  # แก้ไขสีให้เข้มขึ้นตาม Commit 2
         RoundedRectangle:
             size: self.size
             pos: self.pos
@@ -104,6 +80,7 @@ Builder.load_string('''
             keep_ratio: False
             size_hint: 1, 1
 
+        # START
         Button:
             text: ''
             size_hint: 0.19, 0.10
@@ -114,6 +91,7 @@ Builder.load_string('''
                 app.sound.play_click()
                 app.root.current = 'select_level'
 
+        # OPTIONS
         Button:
             text: ''
             size_hint: 0.18, 0.09
@@ -124,6 +102,7 @@ Builder.load_string('''
                 app.sound.play_click()
                 app.go_to_options('main_menu')
             
+        # EXIT
         Button:
             text: ''
             size_hint: 0.18, 0.09
@@ -223,14 +202,15 @@ Builder.load_string('''
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'assets/images/menu_bg.png' 
+            source: 'assets/images/menu_bg.png' # ใช้รูปพื้นหลังเหมือนหน้าแรก
         Color:
-            rgba: 0, 0, 0, 0.5 
+            rgba: 0, 0, 0, 0.5 # หรี่แสงลงนิดนึงให้อ่านหน้าง่ายขึ้น
         Rectangle:
             pos: self.pos
             size: self.size
 
     FloatLayout:
+        # กล่องตรงกลาง
         BoxLayout:
             orientation: 'vertical'
             size_hint: 0.85, 0.65
@@ -240,13 +220,13 @@ Builder.load_string('''
             
             canvas.before:
                 Color:
-                    rgba: 0.15, 0.05, 0.25, 0.9 
+                    rgba: 0.15, 0.05, 0.25, 0.9 # สีม่วงเข้ม
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
                     radius: [25]
                 Color:
-                    rgba: 0.6, 0.8, 0.2, 1 
+                    rgba: 0.6, 0.8, 0.2, 1 # ขอบสีเขียว
                 Line:
                     rounded_rectangle: [self.x, self.y, self.width, self.height, 25]
                     width: 2.5
@@ -255,7 +235,7 @@ Builder.load_string('''
                 text: 'เลือกหมวดหมู่และระดับ'
                 font_size: '35sp'
                 font_name: 'LEELAUIB.TTF'
-                color: 1, 0.7, 0.1, 1 
+                color: 1, 0.7, 0.1, 1 # สีส้มทอง
                 size_hint_y: 0.2
                 bold: True
                 outline_width: 2
@@ -281,7 +261,7 @@ Builder.load_string('''
                     font_size: '20sp'
                     size_hint_y: 0.6
                     background_normal: ''
-                    background_color: 0.9, 0.5, 0.1, 1 
+                    background_color: 0.9, 0.5, 0.1, 1 # สีส้ม
                     color: 0, 0, 0, 1
                     
                 Widget:
@@ -302,7 +282,7 @@ Builder.load_string('''
                     font_size: '20sp'
                     size_hint_y: 0.6
                     background_normal: ''
-                    background_color: 0.5, 0.2, 0.6, 1 
+                    background_color: 0.5, 0.2, 0.6, 1 # สีม่วง
                     color: 1, 1, 1, 1
             
             Widget:
@@ -314,7 +294,7 @@ Builder.load_string('''
                 
                 SmoothButton:
                     text: 'กลับ (Back)'
-                    bg_color: 0.8, 0.2, 0.2, 1 
+                    bg_color: 0.8, 0.2, 0.2, 1 # สีแดง
                     font_name: 'LEELAUIB.TTF'
                     font_size: '22sp'
                     on_release: 
@@ -323,7 +303,7 @@ Builder.load_string('''
                         
                 SmoothButton:
                     text: 'เริ่มเกม (Start)'
-                    bg_color: 0.55, 0.9, 0.2, 1 
+                    bg_color: 0.55, 0.9, 0.2, 1 # สีเขียว
                     color: 0.1, 0.2, 0.05, 1
                     font_name: 'LEELAUIB.TTF'
                     font_size: '22sp'
@@ -350,9 +330,6 @@ class SelectLevelScreen(Screen):
 
 class GameScreen(Screen):
     def on_enter(self, *args):
-        app = App.get_running_app()
-        app.sound.play_game_bgm()
-
         for child in self.children:
             if isinstance(child, MainLayout):
                 child.on_screen_enter()
@@ -390,9 +367,10 @@ class MainLayout(FloatLayout):
             Color(0, 0, 0, 0.4) 
             self.overlay_rect = Rectangle(size=self.size, pos=self.pos)
             
-            # เลเยอร์หน้าจอกระพริบ
+            # --- เพิ่ม เลเยอร์หน้าจอกระพริบ ตรงนี้ ---
             self.flash_color = Color(1, 0, 0, 0)
             self.flash_rect = Rectangle(size=self.size, pos=self.pos)
+            # ----------------------------------
             
         self.bind(size=self._update_bg, pos=self._update_bg)
 
@@ -403,10 +381,13 @@ class MainLayout(FloatLayout):
         self.time_left = 16.0  
         self.time_speed = 1.00  
 
+        # ==========================================
+        # การสร้างหน้าจอ UI วางไว้ใน __init__ ให้ถูกต้อง
+        # ==========================================
         vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
 
         time_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.15))
-        self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(0.2, 1, 0.2, 1))
+        self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(1, 0.6, 0.2, 1))
         self.time_bar = ProgressBar(max=60, value=self.time_left, size_hint=(0.8, 1), pos_hint={'center_x': 0.5})
         time_layout.add_widget(self.time_label)
         time_layout.add_widget(self.time_bar)
@@ -429,7 +410,7 @@ class MainLayout(FloatLayout):
         self.underscore_label = Label(text=underscores, font_size='60sp', bold=True, color=(1, 0.8, 0.2, 1), size_hint=(1, 0.15))
         
         self.answer_input = TextInput(
-            hint_text="[พิมพ์คำแปลที่นี่...]", # UI Hint
+            hint_text="พิมพ์คำแปล...", 
             multiline=False, 
             font_size='36sp',        
             halign="center",
@@ -440,7 +421,7 @@ class MainLayout(FloatLayout):
             padding=[10, 20] 
         )
         self.answer_input.bind(on_text_validate=self.check_answer) 
-        self.answer_input.bind(text=self.update_preview_answer)
+        
         self.submit_btn = Factory.SmoothButton(
             text="SOLVE MYSTERY!", 
             font_size='30sp',        
@@ -547,55 +528,8 @@ class MainLayout(FloatLayout):
         self.pause_overlay.add_widget(pause_box)
         self.add_widget(self.pause_overlay)
 
-        # เริ่มอนิเมชันตอนอยู่นิ่งๆ
-        Clock.schedule_interval(self.idle_animations, 1.0)
-
-    # ==========================================
-    # ระบบ Animations เสริม (Juiciness)
-    # ==========================================
-    def idle_animations(self, dt):
-        if not self.is_paused and not getattr(self.ghost, 'is_paused', True):
-            # Scooby หายใจ
-            anim = Animation(y=self.scooby.y + 10, duration=0.5) + Animation(y=self.scooby.y, duration=0.5)
-            anim.start(self.scooby)
-            
-            # ผีลอย
-            g_anim = Animation(y=self.ghost.y + 20, duration=0.5) + Animation(y=self.ghost.y, duration=0.5)
-            g_anim.start(self.ghost)
-
-    def trigger_screen_shake(self):
-        # ทำให้หน้าจอสั่นเมื่อโดนตี
-        og_pos = self.pos
-        anim = Animation(pos=(og_pos[0]-15, og_pos[1]+15), duration=0.05) + \
-               Animation(pos=(og_pos[0]+15, og_pos[1]-15), duration=0.05) + \
-               Animation(pos=og_pos, duration=0.05)
-        anim.start(self)
-
-    def flash_screen(self, color=(1, 0, 0, 0.5)):
-        # กระพริบจอสีแดง (โดนตี) หรือสีฟ้า (ใช้สกิล)
-        self.flash_color.rgba = color
-        anim = Animation(a=0, duration=0.5)
-        anim.start(self.flash_color)
-
-    def pop_combo_text(self):
-        # คอมโบเด้ง
-        anim = Animation(font_size=sp(35), color=(1, 1, 0, 1), duration=0.1) + \
-               Animation(font_size=sp(26), color=(0.7, 1, 0.3, 1), duration=0.2)
-        anim.start(self.combo_label)
-
-    def pop_score_text(self):
-        # คะแนนเด้ง
-        anim = Animation(color=(1, 1, 1, 1), duration=0.1) + Animation(color=(0.3, 0.9, 0.9, 1), duration=0.3)
-        anim.start(self.score_label)
-
-    def animate_word_in(self):
-        # เลื่อนคำศัพท์เข้ามาแบบเท่ๆ
-        self.word_label.x = -self.width
-        Animation(x=0, duration=0.3, transition='out_bounce').start(self.word_label)
-    # ==========================================
-
-
     def load_vocabulary(self, category_name, level):
+        """อ่านไฟล์ JSON แปลงหมวดหมู่ และโหลดลง pool"""
         cat_map = {
             'สัตว์และธรรมชาติ': 'nature',
             'ชีวิตประจำวัน': 'daily',
@@ -606,8 +540,12 @@ class MainLayout(FloatLayout):
         try:
             with open('vocab_data.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
+            
+            # โหลดคำศัพท์ทั้งหมดของหมวดและระดับนั้นๆ
             self.vocab_pool = list(data[json_key][str(level)])
             self.total_words_in_level = len(self.vocab_pool)
+            
+            # สลับตำแหน่งคำศัพท์
             random.shuffle(self.vocab_pool)
         except Exception as e:
             print(f"Error loading JSON: {e}")
@@ -615,24 +553,22 @@ class MainLayout(FloatLayout):
 
     def next_word(self):
         if not self.vocab_pool:
+            # ล็อคปุ่มและช่องพิมพ์เพื่อป้องกันบัคปั๊มคะแนน
             self.answer_input.disabled = True
             self.submit_btn.disabled = True 
             self.ghost.is_paused = True
             self.word_label.color = (0.2, 1, 0.2, 1)
 
+            # [FEATURE] เช็คว่าด่านปัจจุบันน้อยกว่า 5 ไหม ถ้าใช่ให้ไปด่านต่อไป
             if hasattr(self, 'current_level') and self.current_level < 5:
                 self.word_label.text = f"เคลียร์ด่าน {self.current_level}! เตรียมลุย..."
                 self.underscore_label.text = f"คะแนนสะสม: {self.logic.score}"
                 
-                # แอนิเมชันตอนผ่านด่าน
-                Animation(font_size=sp(60), duration=0.5, transition='out_bounce').start(self.word_label)
-                
+                # หน่วงเวลาให้ผู้เล่นพักหายใจ 2.5 วินาที ก่อนเรียกฟังก์ชันข้ามด่าน
                 Clock.schedule_once(self.go_to_next_level, 2.5)
             else:
                 self.word_label.text = "ยินดีด้วย! คุณเคลียร์ทุกด่านแล้ว!"
                 self.underscore_label.text = f"คะแนนสูงสุด: {self.logic.score}"
-                Animation(font_size=sp(70), duration=0.5, transition='out_bounce').start(self.word_label)
-                
                 if self.timer_event:
                     self.timer_event.cancel()
                     self.timer_event = None
@@ -642,27 +578,39 @@ class MainLayout(FloatLayout):
         self.current_word = self.vocab_pool.pop()
         self.answer_input.text = ""
         self.update_ui()
-        self.animate_word_in() # เรียกใช้แอนิเมชันเลื่อนคำ
     
     def go_to_next_level(self, dt):
+        # เพิ่มระดับด่านขึ้น 1
         self.current_level += 1
-        self.word_label.font_size = '50sp' # Reset font size
+        
+        # โหลดคำศัพท์ของด่านใหม่ในหมวดหมู่เดิม
         self.load_vocabulary(self.current_category, str(self.current_level))
+        
+        # รีเซ็ตเวลา ความเร็ว และสีข้อความ (แต่ไม่รีเซ็ตคะแนนและเลือด)
         self.time_left = 16.0
-        self.time_speed = 1.0 + (self.current_level * 0.1) 
+        self.time_speed = 1.0 + (self.current_level * 0.1) # ด่าน 2 สปีดเริ่มที่ 1.2, ด่าน 5 เริ่มที่ 1.5
         self.time_bar.max = 60
         self.hp.current_hp = self.hp.max_hp
         self.word_label.color = (1, 1, 1, 1) 
+        
+        # จับผีกลับไปจุดเริ่มต้นและปล่อยเดิน
         self.ghost.reset()
         self.ghost.is_paused = False
+        
+        # ปลดล็อคปุ่มและช่องพิมพ์ให้เริ่มเล่นต่อ
         self.answer_input.disabled = False
         self.submit_btn.disabled = False
         self.answer_input.focus = True
+        
+        # ดึงคำศัพท์คำแรกของด่านใหม่มาแสดง
         self.next_word()
         self.update_ui()
 
     def return_to_main_menu_auto(self, dt):
+        # รีเซ็ตค่าตัวแปรทั้งหมดให้พร้อมสำหรับการเริ่มเกมรอบหน้า
         self.reset_entire_game()
+        
+        # สั่งเปลี่ยนหน้าจอกลับไปที่หน้า main_menu
         if self.parent and hasattr(self.parent, 'manager'):
             self.parent.manager.current = 'main_menu'
 
@@ -692,19 +640,16 @@ class MainLayout(FloatLayout):
         self.is_paused = not self.is_paused
         if self.is_paused:
             self.answer_input.text = ""
-            # แอนิเมชัน Pause Menu Fade in
-            Animation(opacity=1, duration=0.2).start(self.pause_overlay)
+            self.pause_overlay.opacity = 1
             self.pause_overlay.disabled = False
             self.pause_overlay.pos_hint = {'center_x': 0.5, 'center_y': 0.5} 
             self.answer_input.disabled = True
             self.submit_btn.disabled = True
             self.ghost.is_paused = True 
         else:
-            # แอนิเมชัน Pause Menu Fade out
-            anim = Animation(opacity=0, duration=0.2)
-            anim.bind(on_complete=lambda *args: setattr(self.pause_overlay, 'pos_hint', {'y': 10}))
-            anim.start(self.pause_overlay)
+            self.pause_overlay.opacity = 0
             self.pause_overlay.disabled = True
+            self.pause_overlay.pos_hint = {'y': 10} 
             self.answer_input.disabled = False
             self.submit_btn.disabled = False
             self.answer_input.focus = True
@@ -719,6 +664,7 @@ class MainLayout(FloatLayout):
         self.flash_rect.size = instance.size
 
     def _update_pause_bg(self, instance, value):
+        self.sound.play_click()
         self.pause_bg.pos = instance.pos
         self.pause_bg.size = instance.size
 
@@ -758,25 +704,13 @@ class MainLayout(FloatLayout):
         if not self.game_started:
             return
         self.time_speed += 0.001 
-        if self.time_speed > 3.0: 
+        if self.time_speed > 3.0: # ลิมิตความเร็วสูงสุดไว้ที่ 3 เท่า
             self.time_speed = 3.0
         self.time_left -= (self.time_speed * 0.1)
         if self.time_left <= 0:
             self.time_left = 0
-            
-        # Dynamic Timer Color
-        if self.time_left > 10:
-            t_color = (0.2, 1, 0.2, 1) # Green
-        elif self.time_left > 4:
-            t_color = (1, 0.6, 0.2, 1) # Orange
-        else:
-            t_color = (1, 0.2, 0.2, 1) # Red (Danger)
-            
-        self.time_label.color = t_color
         self.time_label.text = f"Time: {int(self.time_left)}s (Speed: {self.time_speed:.2f}x)"
-        
-        # Smooth Progress Bar Update
-        Animation(value=self.time_left, duration=0.1).start(self.time_bar)
+        self.time_bar.value = self.time_left
 
     def update_ui(self):
         self.hp_label.text = f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}"
@@ -788,9 +722,9 @@ class MainLayout(FloatLayout):
         underscores_list = []
         for char in english_word:
             if char == ' ':
-                underscores_list.append('   ') 
+                underscores_list.append('   ') # ถ้าเป็นช่องว่าง ให้เว้นช่องให้กว้างหน่อย
             else:
-                underscores_list.append('_')   
+                underscores_list.append('_')   # ถ้าเป็นตัวอักษร ให้ใส่ขีดล่าง
                 
         self.underscore_label.text = ' '.join(underscores_list)
 
@@ -798,25 +732,12 @@ class MainLayout(FloatLayout):
         if self.hp.is_dead() or self.time_left <= 0 or self.is_paused:
             return  
         user_ans = self.answer_input.text.strip().lower() 
-        if not user_ans: 
+        if not user_ans: # เพิ่ม 2 บรรทัดนี้: ถ้าว่างเปล่าให้เด้งออกไปเลย ไม่ตรวจ
             return
-            
         correct_ans = self.current_word["english"].lower()
-        old_score = self.logic.score
         is_correct = self.logic.check_answer(user_ans, correct_ans)
-        
         if is_correct:
             self.sound.play_correct()
-            # เด้งคะแนนและคอมโบ
-            score_diff = self.logic.score - old_score
-            self.add_widget(FloatingText(f"+{score_diff} Score", (self.score_label.x, self.score_label.y)))
-            self.pop_combo_text()
-            self.pop_score_text()
-            
-            # กระพริบสีเขียว
-            anim = Animation(color=(0.2, 1, 0.2, 1), duration=0.1) + Animation(color=(1, 1, 1, 1), duration=0.2)
-            anim.start(self.word_label)
-            
             self.time_left = 16.0
             self.ghost.reset()
             if self.time_left > self.time_bar.max:
@@ -826,77 +747,56 @@ class MainLayout(FloatLayout):
             Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
         else:
             self.answer_input.text = "" 
-            # สั่นจอเบาๆ เวลาตอบผิด
-            anim_shake = Animation(x=self.answer_input.x-10, duration=0.05) + Animation(x=self.answer_input.x+10, duration=0.05) + Animation(x=self.answer_input.x, duration=0.05)
-            anim_shake.start(self.answer_input)
-            
             if self.time_speed > 1.0:
                 self.time_speed = 1.0 
             self.update_ui()
-            
             if self.hp.is_dead():
-                self.trigger_game_over()
+                self.sound.play_gameover()
+                self.word_label.text = "RUH-ROH! GAME OVER!" 
+                self.underscore_label.text = "" 
+                self.word_label.color = (1, 0.3, 0.1, 1)
+                self.answer_input.disabled = True 
+                Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
+                self.word_label.color = (1, 0.3, 0.3, 1) 
+                Clock.schedule_once(lambda dt: setattr(self.word_label, 'color', (1, 1, 1, 1)), 0.5)
 
     def buy_life(self, instance):
+        # เช็คว่าเลือดปัจจุบันน้อยกว่าเลือดสูงสุดหรือเปล่า
         if self.hp.current_hp < self.hp.max_hp:
-            if self.logic.score >= 50:
-                self.logic.buy_life(cost=50)
-                # แอนิเมชันเพิ่มเลือด
-                anim_heal = Animation(font_size=sp(35), color=(0,1,0,1), duration=0.1) + Animation(font_size=sp(26), color=(0.9, 0.6, 0.3, 1), duration=0.2)
-                anim_heal.start(self.hp_label)
+            if self.logic.buy_life(cost=50):
                 self.update_ui()
-            else:
-                self.flash_shop_error()
 
     def get_hint(self, instance):
-<<<<<<< HEAD
-        if self.logic.score >= 20:
-            hint = self.logic.get_hint(self.current_word["english"], cost=20)
-            if hint:
-                self.answer_input.text = hint
-                # กระพริบคำใบ้
-                anim_hint = Animation(color=(0, 1, 1, 1), duration=0.1) + Animation(color=(1, 0.8, 0.2, 1), duration=0.2)
-                anim_hint.start(self.underscore_label)
-                self.update_ui()
-        else:
-            self.flash_shop_error()
-=======
         hint = self.logic.get_hint(self.current_word["english"], cost=20)
         if hint:
             self.answer_input.text = hint
             self.update_ui()
-            self.answer_input.focus = True
->>>>>>> e7d8c01631f7bfd70abdf04001b9995319e696d8
 
     def buy_slow_time(self, instance):
         cost = 30
+        
+        # เช็คว่าคะแนนพอซื้อหรือไม่
         if self.logic.score >= cost:
             self.logic.score -= cost
+            
+            # [FIX] 1. ผลักผีกลับไปที่จุดเริ่มต้น (หนีผีได้จริงๆ แล้ว!)
             if hasattr(self, 'ghost'):
                 self.ghost.reset()
                 self.ghost.is_paused = False
             
+            # [FIX] 2. รีเซ็ตความเร็วเวลาให้ช้าลงแบบเห็นผลชัดเจน (เซ็ตกลับไปเป็น 0.75 เลย)
             self.time_speed = 0.75 
+            
+            # [FIX] 3. แถมโบนัสต่อเวลาให้ผู้เล่นตั้งหลักอีก 5 วินาที
             self.time_left += 5.0
-            if self.time_left > 16.0:  
+            if self.time_left > 16.0:  # ป้องกันเวลาล้นหลอด
                 self.time_left = 16.0
             self.time_bar.value = self.time_left
             
-            # เอฟเฟกต์แฟลชสีฟ้า
-            self.flash_screen((0, 0.5, 1, 0.4))
             self.update_ui()
-        else:
-            self.flash_shop_error()
-            
-    def flash_shop_error(self):
-        # กระพริบเตือนว่าคะแนนไม่พอ
-        self.sound.play_wrong() # แจ้งเตือนเสียงผิด
-        anim = Animation(color=(1, 0, 0, 1), duration=0.1) + Animation(color=(0.3, 0.9, 0.9, 1), duration=0.1)
-        anim.start(self.score_label)
 
     def test_add_score(self, instance):
         self.logic.score += 10
-        self.pop_score_text()
         self.update_ui()
 
     def test_reduce_score(self, instance):
@@ -910,12 +810,6 @@ class MainLayout(FloatLayout):
             return
         self.time_left = 0
         self.hp.take_damage()
-        
-        # เอฟเฟกต์ความเจ็บปวด!
-        self.trigger_screen_shake()
-        self.flash_screen((1, 0, 0, 0.5))
-        self.add_widget(FloatingText("-1 HP!", (self.hp_label.x, self.hp_label.y), color=(1,0,0,1)))
-        
         self.logic.combo_multiplier = 1
         self.sound.play_wrong()
         self.ghost.is_paused = True
@@ -923,22 +817,17 @@ class MainLayout(FloatLayout):
         self.answer_input.disabled = True 
         self.submit_btn.disabled = True
         self.update_ui()
-        
         if self.hp.is_dead():
-            self.trigger_game_over()
+            self.sound.play_gameover()
+            self.word_label.text = "RUH-ROH! GAME OVER!"
+            self.underscore_label.text = ""
+            self.answer_input.disabled = True
+            if self.timer_event:
+                self.timer_event.cancel()
+                self.timer_event = None
+            Clock.schedule_once(self.return_to_main_menu_auto, 4.0)
         else:
             Clock.schedule_once(self.reset_ghost_after_hit, 2.0)
-            
-    def trigger_game_over(self):
-        self.sound.play_gameover()
-        self.word_label.text = "RUH-ROH! GAME OVER!"
-        Animation(font_size=sp(65), transition='out_bounce', duration=0.5).start(self.word_label)
-        self.underscore_label.text = ""
-        self.answer_input.disabled = True
-        if self.timer_event:
-            self.timer_event.cancel()
-            self.timer_event = None
-        Clock.schedule_once(self.return_to_main_menu_auto, 4.0)
     
     def setup_ghost_position(self, dt):
         self.ghost.start_x = self.width + 100
@@ -959,14 +848,15 @@ class MainLayout(FloatLayout):
         self.answer_input.disabled = False
         self.submit_btn.disabled = False
         self.answer_input.focus = True
+        self.answer_input.focus = True
         self.time_left = 16.0
         self.time_speed = 1.0
         self.time_bar.value = self.time_left
 
     def start_game(self, category, level):
+        # รีเซ็ตค่าและโหลดคำศัพท์ตามโหมดที่เลือก
         self.current_category = category
         self.current_level = int(level)
-        self.word_label.font_size = '50sp' # Reset เผื่อมาจาก Game Over
         self.load_vocabulary(category, level)
 
         self.game_started = True
@@ -976,10 +866,12 @@ class MainLayout(FloatLayout):
         self.logic.combo_multiplier = 1
         self.hp.current_hp = self.hp.max_hp
         
+        # เริ่ม Timer
         if self.timer_event:
             self.timer_event.cancel()
         self.timer_event = Clock.schedule_interval(self.update_timer, 0.1)
         
+        # ปล่อยผี!
         self.ghost.reset()
         self.ghost.is_paused = False
         self.answer_input.disabled = False
@@ -988,22 +880,14 @@ class MainLayout(FloatLayout):
         self.next_word()
         self.update_ui()
 
-    def update_preview_answer(self, instance, value):
-        english_word = self.current_word['english']
-        typed = value.lower()
+# ==========================================
+# Commit 2: feat: add custom font and ImageButton class
+# ==========================================
+# ใช้ไฟล์ฟอนต์ตัวหนาที่มีอยู่ในโฟลเดอร์
+LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF') 
 
-        preview = []
-
-        for i, char in enumerate(english_word):
-            if char == ' ':
-                preview.append(' ')
-            elif i < len(typed):
-                preview.append(f"[color=00ff00]{typed[i]}[/color]")
-            else:
-                preview.append('_')
-
-        self.underscore_label.markup = True
-        self.underscore_label.text = ' '.join(preview)
+class ImageButton(ButtonBehavior, Image):
+    pass
 
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
@@ -1012,13 +896,18 @@ class VocabGameApp(App):
     
     def use_add_score(self):
         pass
+
     def use_hint(self):
         pass
+
     def use_escape(self):
         pass
 
     def build(self):
         self.sound = SoundManager()
+        
+        # ลบ 4-5 บรรทัดเดิมที่โหลด bg_music ออกไปเลยครับ
+        # แล้วสั่งให้ SoundManager เล่นเพลงเมนูตั้งแต่ตอนเปิดแอปแทน
         self.sound.play_menu_bgm()
 
         sm = ScreenManager()
@@ -1061,6 +950,16 @@ class VocabGameApp(App):
             if isinstance(child, MainLayout):
                 child.reset_entire_game() 
                 child.start_game(category, level)
+
+# คลาสของหน้าตอนเล่นเกม (ซ้ำกับด้านบน แต่คงไว้ตามโครงสร้างเดิมให้)
+class GameScreen(Screen):
+    def on_enter(self, *args):
+        app = App.get_running_app()
+        app.sound.play_game_bgm()
+
+        for child in self.children:
+            if isinstance(child, MainLayout):
+                child.on_screen_enter()
 
 if __name__ == "__main__":
     VocabGameApp().run()
