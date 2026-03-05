@@ -35,7 +35,7 @@ Window.minimum_width = 360
 Window.minimum_height = 640
 
 # ==========================================
-# 1. สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
+# Commit 3: ui: create SmoothButton base class
 # ==========================================
 class SmoothButton(Button):
     bg_color = ListProperty([0.5, 0.5, 0.5, 1])  
