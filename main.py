@@ -42,36 +42,40 @@ class SmoothButton(Button):
     radius = ListProperty([25]) 
     shadow_color = ListProperty([0, 0, 0, 0.3])  
 
-# --- โหลดสไตล์ UI พิเศษ ---
-Builder.load_string('''
+# ==========================================
+# Commit 5: style: define kv language for custom widgets
+# ==========================================
+UI_KV = '''
 <SmoothButton>:
-    background_color: 0,0,0,0  
+    background_color: 0,0,0,0
     background_normal: ''
-
     canvas.before:
         Color:
             rgba: self.shadow_color
         RoundedRectangle:
             size: self.size
-            pos: self.pos[0] + 3, self.pos[1] - 5  
+            pos: self.pos[0] + 3, self.pos[1] - 5
             radius: self.radius
-
         Color:
-            rgba: self.bg_color if self.state == 'normal' else [c * 0.9 for c in self.bg_color] 
+            rgba: self.bg_color if self.state == 'normal' else [c * 0.9 for c in self.bg_color]
         RoundedRectangle:
             size: self.size
             pos: self.pos
-            radius: self.radius  
+            radius: self.radius
 
 <CardBox@BoxLayout>:
     canvas.before:
         Color:
-            rgba: 0, 0, 0, 0.65  # แก้ไขสีให้เข้มขึ้นตาม Commit 2
+            rgba: 0, 0, 0, 0.65
         RoundedRectangle:
             size: self.size
             pos: self.pos
             radius: [20]
+'''
+Builder.load_string(UI_KV)
 
+# --- โหลดหน้าจอต่างๆ ตามโค้ดเดิม ---
+Builder.load_string('''
 <MainMenuScreen>:
     FloatLayout:
         Image:
