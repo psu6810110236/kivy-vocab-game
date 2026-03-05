@@ -276,6 +276,8 @@ Builder.load_string('''
                     font_name: 'LEELAUIB.TTF'
                     size_hint_y: 0.4
                     color: 1, 1, 1, 1
+                    outline_width: 2
+                    outline_color: 0, 0, 0, 1
                     
                 Spinner:
                     id: category_spinner
@@ -297,6 +299,8 @@ Builder.load_string('''
                     font_name: 'LEELAUIB.TTF'
                     size_hint_y: 0.4
                     color: 1, 1, 1, 1
+                    outline_width: 2
+                    outline_color: 0, 0, 0, 1
                     
                 Spinner:
                     id: level_spinner
@@ -318,20 +322,22 @@ Builder.load_string('''
                 
                 SmoothButton:
                     text: 'กลับ (Back)'
-                    bg_color: 0.8, 0.2, 0.2, 1 
+                    bg_color: 0.9, 0.4, 0.1, 1
                     font_name: 'LEELAUIB.TTF'
                     font_size: '22sp'
+                    radius: [20]
                     on_release: 
                         app.sound.play_click()
                         app.root.current = 'main_menu'
                         
                 SmoothButton:
                     text: 'เริ่มเกม (Start)'
-                    bg_color: 0.55, 0.9, 0.2, 1 
+                    bg_color: 0.6, 0.8, 0.2, 1 
                     color: 0.1, 0.2, 0.05, 1
                     font_name: 'LEELAUIB.TTF'
                     font_size: '22sp'
                     bold: True
+                    radius: [20]
                     on_release: 
                         app.sound.play_click()
                         app.start_game_with_settings(category_spinner.text, level_spinner.text)
@@ -410,32 +416,33 @@ class MainLayout(FloatLayout):
         vbox = BoxLayout(orientation="vertical", spacing=25, padding=35, size_hint=(1, 1))
 
         time_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.15))
-        self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(0.2, 1, 0.2, 1))
+        self.time_label = Label(text=f"Time: {int(self.time_left)}s", font_size='34sp', bold=True, color=(0.2, 1, 0.2, 1), outline_width=2, outline_color=(0,0,0,1))
         self.time_bar = ProgressBar(max=60, value=self.time_left, size_hint=(0.8, 1), pos_hint={'center_x': 0.5})
         time_layout.add_widget(self.time_label)
         time_layout.add_widget(self.time_bar)
         vbox.add_widget(time_layout)
 
         status_card = Factory.CardBox(size_hint=(0.92, 0.15), padding=12, pos_hint={'center_x': 0.5})
-        self.hp_label = Label(text=f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}", font_size='26sp', color=(0.9, 0.6, 0.3, 1), bold=True)
-        self.score_label = Label(text=f"Score: {self.logic.score}", font_size='26sp', color=(0.3, 0.9, 0.9, 1), bold=True)
-        self.combo_label = Label(text=f"Combo: x{self.logic.combo_multiplier}", font_size='26sp', color=(0.7, 1, 0.3, 1), bold=True)
+        self.hp_label = Label(text=f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}", font_size='26sp', color=(0.9, 0.6, 0.3, 1), bold=True, outline_width=2, outline_color=(0,0,0,1))
+        self.score_label = Label(text=f"Score: {self.logic.score}", font_size='26sp', color=(0.3, 0.9, 0.9, 1), bold=True, outline_width=2, outline_color=(0,0,0,1))
+        self.combo_label = Label(text=f"Combo: x{self.logic.combo_multiplier}", font_size='26sp', color=(0.7, 1, 0.3, 1), bold=True, outline_width=2, outline_color=(0,0,0,1))
         status_card.add_widget(self.hp_label)
         status_card.add_widget(self.score_label)
         status_card.add_widget(self.combo_label)
         vbox.add_widget(status_card)
 
         game_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.5), spacing=15)
-        self.word_label = Label(text=f"ปริศนา: {self.current_word['thai']}", font_size='50sp', bold=True, color=(1, 1, 1, 1), size_hint=(1, 0.25))
+        self.word_label = Label(text=f"ปริศนา: {self.current_word['thai']}", font_size='50sp', bold=True, color=(1, 1, 1, 1), size_hint=(1, 0.25), outline_width=3, outline_color=(0, 0, 0, 1))
         
         ans_len = len(self.current_word['english'])
         underscores = ' '.join(['_'] * ans_len)  
-        self.underscore_label = Label(text=underscores, font_size='60sp', bold=True, color=(1, 0.8, 0.2, 1), size_hint=(1, 0.15))
+        self.underscore_label = Label(text=underscores, font_size='60sp', bold=True, color=(1, 0.8, 0.2, 1), size_hint=(1, 0.15), outline_width=2, outline_color=(0,0,0,1))
         
         self.answer_input = TextInput(
             hint_text="[พิมพ์คำแปลที่นี่...]", # UI Hint
             multiline=False, 
-            font_size='36sp',        
+            font_size='36sp', 
+            font_name='LEELAUIB.TTF',       
             halign="center",
             size_hint=(0.7, None),   
             height='90sp',            
@@ -452,8 +459,9 @@ class MainLayout(FloatLayout):
             size_hint=(0.52, None),  
             height='90sp',            
             pos_hint={'center_x': 0.5},
-            bg_color=(0.55, 0.9, 0.2, 1), 
-            color=(0.1, 0.2, 0.05, 1) 
+            bg_color=(0.6, 0.8, 0.2, 1), 
+            color=(0.1, 0.2, 0.05, 1),
+            radius=[25]
         )
         self.submit_btn.bind(on_press=self.check_answer)
         
@@ -466,14 +474,14 @@ class MainLayout(FloatLayout):
         vbox.add_widget(game_layout)
 
         # ==========================================
-        # ร้านค้าสกิล (ลบปุ่ม Test ออกแล้ว)
+        # ร้านค้าสกิล
         # ==========================================
         shop_layout = BoxLayout(size_hint=(0.98, None), height='130sp', spacing=15, pos_hint={'center_x': 0.5})
         
         skill1_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_heal = ImageButton(source='assets/images/add_score.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_heal.bind(on_release=lambda x: [self.sound.play_click(), self.buy_life(x)])
-        lbl_heal = Label(text="เพิ่มเลือด\n 50 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(1, 0.8, 0.2, 1))
+        lbl_heal = Label(text="เพิ่มเลือด\n 50 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(1, 0.8, 0.2, 1), outline_width=2, outline_color=(0,0,0,1))
         lbl_heal.bind(size=lbl_heal.setter('text_size')) 
         skill1_box.add_widget(btn_heal)
         skill1_box.add_widget(lbl_heal)
@@ -481,7 +489,7 @@ class MainLayout(FloatLayout):
         skill2_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_hint = ImageButton(source='assets/images/hint.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_hint.bind(on_release=lambda x: [self.sound.play_click(), self.get_hint(x)])
-        lbl_hint = Label(text="คำใบ้\n 20 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.4, 0.9, 1, 1))
+        lbl_hint = Label(text="คำใบ้\n 20 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.4, 0.9, 1, 1), outline_width=2, outline_color=(0,0,0,1))
         lbl_hint.bind(size=lbl_hint.setter('text_size'))
         skill2_box.add_widget(btn_hint)
         skill2_box.add_widget(lbl_hint)
@@ -489,7 +497,7 @@ class MainLayout(FloatLayout):
         skill3_box = Factory.CardBox(orientation='vertical', padding=10, spacing=5)
         btn_slow = ImageButton(source='assets/images/escape.png', size_hint=(1, 0.65), allow_stretch=True)
         btn_slow.bind(on_release=lambda x: [self.sound.play_click(), self.buy_slow_time(x)])
-        lbl_slow = Label(text="หนีผี! \n 30 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.8, 0.5, 1, 1))
+        lbl_slow = Label(text="หนีผี! \n 30 SCORE", font_size='18sp', bold=True, halign='center', valign='middle', size_hint=(1, 0.35), color=(0.8, 0.5, 1, 1), outline_width=2, outline_color=(0,0,0,1))
         lbl_slow.bind(size=lbl_slow.setter('text_size'))
         skill3_box.add_widget(btn_slow)
         skill3_box.add_widget(lbl_slow)
@@ -510,33 +518,72 @@ class MainLayout(FloatLayout):
         self.ghost.y = self.scooby.y
 
         # ==========================================
-        # Pause Overlay 
+        # Pause Overlay (ปรับปรุงใหม่ให้ดูเป็นป๊อปอัปเกม)
         # ==========================================
         self.pause_overlay = FloatLayout(size_hint=(1, 1), opacity=0, pos_hint={'y': 10})
         self.pause_overlay.disabled = True
         
         with self.pause_overlay.canvas.before:
-            Color(0, 0, 0, 0.75) 
+            Color(0.1, 0.05, 0.15, 0.85) # โทนม่วงเข้มโปร่งแสง ให้ดูมีมิติกว่าสีดำทื่อๆ
             self.pause_bg = Rectangle(size=self.size, pos=self.pos)
         self.pause_overlay.bind(size=self._update_pause_bg, pos=self._update_pause_bg)
 
-        pause_box = BoxLayout(orientation='vertical', size_hint=(0.4, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5}, spacing=20)
+        # ใช้ CardBox เป็นพื้นหลังกล่องเมนู Pause ให้อยู่ตรงกลางจอ
+        pause_box = Factory.CardBox(orientation='vertical', size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5}, padding=dp(25), spacing=dp(20))
         
-        pause_label = Label(text="GAME PAUSED", font_size='50sp', bold=True, color=(1, 0.8, 0.2, 1), size_hint_y=0.4)
+        pause_label = Label(
+            text="GAME PAUSED", 
+            font_size='50sp', 
+            font_name='LEELAUIB.TTF', 
+            bold=True, 
+            color=(1, 0.85, 0.1, 1), # สีเหลืองทอง
+            outline_width=3, 
+            outline_color=(0.3, 0.1, 0.4, 1), # ขอบสีม่วงเข้ม
+            size_hint_y=0.35
+        )
         
-        resume_btn = Factory.SmoothButton(text="เล่นต่อ (Resume)", font_size='26sp', bg_color=(0.2, 0.7, 0.3, 1), size_hint_y=0.2)
+        # ใส่ปุ่มไว้ใน BoxLayout ย่อย เพื่อให้ตั้งค่าความกว้าง (Margin) ซ้าย-ขวาได้สวยงาม ไม่ยืดติดขอบกล่อง
+        button_layout = BoxLayout(orientation='vertical', spacing=dp(15), size_hint_y=0.65, size_hint_x=0.9, pos_hint={'center_x': 0.5})
+        
+        resume_btn = Factory.SmoothButton(
+            text="เล่นต่อ (Resume)", 
+            font_name='LEELAUIB.TTF', 
+            font_size='26sp', 
+            bold=True,
+            bg_color=(0.55, 0.9, 0.2, 1), 
+            color=(0.1, 0.2, 0.05, 1), 
+            radius=[25]
+        )
         resume_btn.bind(on_release=lambda x: self.toggle_pause())
         
-        options_btn = Factory.SmoothButton(text="ตั้งค่า (Options)", font_size='26sp', bg_color=(0.2, 0.5, 0.8, 1), size_hint_y=0.2)
+        options_btn = Factory.SmoothButton(
+            text="ตั้งค่า (Options)", 
+            font_name='LEELAUIB.TTF', 
+            font_size='26sp', 
+            bold=True,
+            bg_color=(0.9, 0.5, 0.1, 1), 
+            color=(1, 1, 1, 1), 
+            radius=[25]
+        )
         options_btn.bind(on_release=self.go_to_options_from_pause)
         
-        quit_btn = Factory.SmoothButton(text="ออกไปเมนูหลัก (Exit)", font_size='26sp', bg_color=(0.8, 0.2, 0.2, 1), size_hint_y=0.2)
+        quit_btn = Factory.SmoothButton(
+            text="เมนูหลัก (Exit)", 
+            font_name='LEELAUIB.TTF', 
+            font_size='26sp', 
+            bold=True,
+            bg_color=(0.8, 0.2, 0.3, 1), 
+            color=(1, 1, 1, 1), 
+            radius=[25]
+        )
         quit_btn.bind(on_release=self.quit_to_main_menu)
 
+        button_layout.add_widget(resume_btn)
+        button_layout.add_widget(options_btn)
+        button_layout.add_widget(quit_btn)
+
         pause_box.add_widget(pause_label)
-        pause_box.add_widget(resume_btn)
-        pause_box.add_widget(options_btn)
-        pause_box.add_widget(quit_btn)
+        pause_box.add_widget(button_layout)
         
         self.pause_overlay.add_widget(pause_box)
         self.add_widget(self.pause_overlay)
