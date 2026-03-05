@@ -24,6 +24,7 @@ from kivy.uix.behaviors import ButtonBehavior
 import json
 from kivy.uix.spinner import Spinner
 from kivy.animation import Animation
+import os
 
 Window.minimum_width = 360
 Window.minimum_height = 640
@@ -133,6 +134,24 @@ Builder.load_string('''
             on_release:
                 app.sound.play_click()
                 app.stop()
+
+        # --- กล่องแสดงสถิติคะแนนสูงสุด (มุมขวาล่าง) ---
+        CardBox:
+            size_hint: None, None
+            size: dp(220), dp(60)
+            pos_hint: {'right': 0.95, 'y': 0.03} # มุมขวาล่าง ห่างขอบนิดหน่อย
+            padding: dp(10)
+            
+            Label:
+                id: highscore_label
+                text: '🏆 สูงสุด: 0'
+                font_size: '22sp'
+                font_name: 'LEELAUIB.TTF'
+                color: 1, 0.85, 0.1, 1
+                bold: True
+                outline_width: 2
+                outline_color: 0.3, 0.1, 0.4, 1
+        # ----------------------------------------
 
 <OptionsScreen>:
     canvas.before:
@@ -351,6 +370,20 @@ class MainMenuScreen(Screen):
     def on_enter(self, *args):
         app = App.get_running_app()
         app.sound.play_menu_bgm()
+        self.update_highscore()
+
+    def update_highscore(self):
+        highscore = 0
+        try:
+            if os.path.exists('highscore.json'):
+                with open('highscore.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    highscore = data.get('highscore', 0)
+        except Exception as e:
+            print(f"Error loading highscore: {e}")
+        
+        # อัปเดตกล่องข้อความที่มุมขวาล่าง
+        self.ids.highscore_label.text = f'🏆 สูงสุด: {highscore}'
 
 class OptionsScreen(Screen):
     pass
@@ -590,23 +623,40 @@ class MainLayout(FloatLayout):
         Clock.schedule_interval(self.idle_animations, 1.0)
 
     # ==========================================
+    # ฟังก์ชันสำหรับ Save คะแนนสูงสุด
+    # ==========================================
+    def save_highscore(self):
+        highscore = 0
+        try:
+            if os.path.exists('highscore.json'):
+                with open('highscore.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    highscore = data.get('highscore', 0)
+        except Exception as e:
+            print(f"Error loading highscore: {e}")
+
+        if self.logic.score > highscore:
+            try:
+                with open('highscore.json', 'w', encoding='utf-8') as f:
+                    json.dump({'highscore': self.logic.score}, f)
+            except Exception as e:
+                print(f"Error saving highscore: {e}")
+
+    # ==========================================
     # ระบบสุ่มหลอกหลอน (Random Spooky Events) 
     # ==========================================
     def try_spooky_event(self, dt):
         if self.is_paused or self.hp.is_dead() or not self.game_started:
             return
             
-        # โอกาส 20% ที่จะเกิดเหตุการณ์กวนสมาธิ (เช็กทุกๆ 2 วินาที)
         if random.random() <= 0.20:
             event = random.choice(['thunder', 'poltergeist', 'jump_scare'])
             
             if event == 'thunder':
-                # ฟ้าร้อง: สว่างวาบ (ขาว) -> มืดสนิท (ดำ) บังจอเกือบมิด -> กลับเป็นปกติ
                 self.flash_color.rgba = (1, 1, 1, 0.9) 
                 anim = Animation(a=0, duration=0.1) + Animation(rgba=(0, 0, 0, 0.95), duration=0.1) + Animation(a=0, duration=0.6)
                 anim.start(self.flash_color)
                 
-                # สั่นหน้าจอแบบรุนแรง
                 og_pos = self.pos
                 shake = Animation(pos=(og_pos[0]-25, og_pos[1]+25), duration=0.05) + \
                         Animation(pos=(og_pos[0]+25, og_pos[1]-25), duration=0.05) + \
@@ -615,8 +665,7 @@ class MainLayout(FloatLayout):
                 shake.start(self)
                 
             elif event == 'poltergeist':
-                # ผีสิงสิ่งของ: คำศัพท์และช่องพิมพ์สั่นซ้ายขวารัวๆ (อ่าน/พิมพ์ยากขึ้น)
-                self.word_label.color = (1, 0.2, 0.2, 1) # โจทย์เปลี่ยนเป็นสีแดงเลือด
+                self.word_label.color = (1, 0.2, 0.2, 1) 
                 
                 og_word_x = self.word_label.x
                 word_shake = Animation(x=og_word_x - dp(20), duration=0.05) + Animation(x=og_word_x + dp(20), duration=0.05)
@@ -628,18 +677,16 @@ class MainLayout(FloatLayout):
                 input_shake.repeat = True
                 input_shake.start(self.answer_input)
                 
-                # หยุดสั่นหลังจากผ่านไป 1.5 วินาที
                 def stop_poltergeist(*args):
                     Animation.cancel_all(self.word_label, 'x')
                     Animation.cancel_all(self.answer_input, 'x')
                     self.word_label.x = og_word_x
                     self.answer_input.x = og_input_x
-                    self.word_label.color = (1, 1, 1, 1) # กลับเป็นสีปกติ
+                    self.word_label.color = (1, 1, 1, 1) 
                     
                 Clock.schedule_once(stop_poltergeist, 1.5)
                 
             elif event == 'jump_scare':
-                # Jump Scare: ตัวหนังสือเบ้อเริ่มเด้งกระแทกหน้าจอบังช่องพิมพ์
                 scary_texts = ["BEHIND YOU!", "I SEE YOU...", "BOO!!", "ระวังข้างหลัง!!"]
                 scary_label = Label(
                     text=random.choice(scary_texts),
@@ -654,7 +701,6 @@ class MainLayout(FloatLayout):
                 )
                 self.add_widget(scary_label)
                 
-                # ขยายใหญ่พุ่งใส่หน้าและจางหายไป
                 anim = Animation(font_size=sp(160), opacity=0, duration=0.8, transition='out_expo')
                 anim.bind(on_complete=lambda *args: self.remove_widget(scary_label))
                 anim.start(scary_label)
@@ -693,6 +739,7 @@ class MainLayout(FloatLayout):
     def animate_word_in(self):
         self.word_label.x = -self.width
         Animation(x=0, duration=0.3, transition='out_bounce').start(self.word_label)
+
     # ==========================================
 
     def load_vocabulary(self, category_name, level):
@@ -729,6 +776,9 @@ class MainLayout(FloatLayout):
             else:
                 self.word_label.text = "ยินดีด้วย! คุณเคลียร์ทุกด่านแล้ว!"
                 self.underscore_label.text = f"คะแนนสูงสุด: {self.logic.score}"
+                
+                self.save_highscore()
+                
                 Animation(font_size=sp(70), duration=0.5, transition='out_bounce').start(self.word_label)
                 
                 if self.timer_event:
@@ -1051,6 +1101,8 @@ class MainLayout(FloatLayout):
         self.answer_input.disabled = True
         self.flash_screen((0.5, 0, 0, 0.7)) 
         
+        self.save_highscore()
+        
         if getattr(self, 'timer_event', None):
             self.timer_event.cancel()
             self.timer_event = None
@@ -1101,7 +1153,6 @@ class MainLayout(FloatLayout):
             self.timer_event.cancel()
         self.timer_event = Clock.schedule_interval(self.update_timer, 0.1)
         
-        # เช็กเพื่อเริ่มระบบหลอกหลอนทุกๆ 2 วินาที
         if getattr(self, 'spooky_timer', None):
             self.spooky_timer.cancel()
         self.spooky_timer = Clock.schedule_interval(self.try_spooky_event, 2.0)
