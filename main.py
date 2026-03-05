@@ -141,7 +141,7 @@ Builder.load_string('''
             size: self.size
             source: 'assets/images/bg_scooby_doo.png'
         Color:
-            rgba: 0, 0, 0, 0.7
+            rgba: 0.15, 0.05, 0.25, 0.85
         Rectangle:
             pos: self.pos
             size: self.size
@@ -149,50 +149,53 @@ Builder.load_string('''
     FloatLayout:
         CardBox:
             orientation: 'vertical'
-            size_hint: 0.85, 0.6
+            size_hint: 0.85, 0.55
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             padding: dp(30)
-            spacing: 30
+            spacing: dp(20)
             
             Label:
-                text: 'การตั้งค่า (Options)'
-                font_size: '50sp'
+                text: 'ตั้งค่าความหลอน'
+                font_size: '45sp'
                 font_name: 'LEELAUIB.TTF'
-                color: 1, 0.8, 0.2, 1
+                color: 0.6, 0.8, 0.2, 1
                 size_hint_y: 0.3
                 bold: True
-                outline_width: 2
-                outline_color: 0, 0, 0, 1
+                outline_width: 3
+                outline_color: 0.2, 0.05, 0.3, 1
             
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint_y: 0.3
-                size_hint_x: 0.8
+                size_hint_x: 0.9
                 pos_hint: {'center_x': 0.5}
                 spacing: 20
                 
                 SmoothButton:
                     text: '-'
                     font_size: '50sp'
-                    size_hint_x: 0.2
-                    bg_color: 0.8, 0.3, 0.3, 1
+                    size_hint_x: 0.25
+                    bg_color: 0.9, 0.4, 0.1, 1
+                    radius: [20]
                     on_release: 
                         app.sound.play_click()
                         app.change_volume(-0.1)
                     
                 Label:
-                    text: f'ระดับเสียงดนตรี: {int(app.volume_level * 100)}%'
-                    font_size: '35sp'
+                    text: f'เสียงดนตรี: {int(app.volume_level * 100)}%'
+                    font_size: '28sp'
                     font_name: 'LEELAUIB.TTF'
-                    size_hint_x: 0.6
+                    size_hint_x: 0.5
+                    color: 1, 1, 1, 1
                     outline_width: 2
                     outline_color: 0, 0, 0, 1
                     
                 SmoothButton:
                     text: '+'
                     font_size: '50sp'
-                    size_hint_x: 0.2
-                    bg_color: 0.2, 0.7, 0.3, 1
+                    size_hint_x: 0.25
+                    bg_color: 0.6, 0.8, 0.2, 1
+                    radius: [20]
                     on_release: 
                         app.sound.play_click()
                         app.change_volume(0.1)
@@ -202,19 +205,20 @@ Builder.load_string('''
             
             SmoothButton:
                 text: 'กลับ (Back)'
-                font_size: '30sp'
+                font_size: '28sp'
                 font_name: 'LEELAUIB.TTF'
                 size_hint_y: None
-                height: '80sp'
-                size_hint_x: 0.5
+                height: '70sp'
+                size_hint_x: 0.6
                 pos_hint: {'center_x': 0.5}
-                bg_color: 0.5, 0.5, 0.5, 1
+                bg_color: 0.5, 0.2, 0.6, 1
+                radius: [25]
                 on_release: 
                     app.sound.play_click()
                     app.back_from_options()
             
             Widget:
-                size_hint_y: 0.3
+                size_hint_y: 0.1
 
 <SelectLevelScreen>:
     canvas.before:
@@ -593,7 +597,6 @@ class MainLayout(FloatLayout):
         self.word_label.x = -self.width
         Animation(x=0, duration=0.3, transition='out_bounce').start(self.word_label)
     # ==========================================
-
 
     def load_vocabulary(self, category_name, level):
         cat_map = {
