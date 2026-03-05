@@ -466,7 +466,7 @@ class MainLayout(FloatLayout):
         vbox.add_widget(game_layout)
 
         # ==========================================
-        # ร้านค้าสกิล
+        # ร้านค้าสกิล (ลบปุ่ม Test ออกแล้ว)
         # ==========================================
         shop_layout = BoxLayout(size_hint=(0.98, None), height='130sp', spacing=15, pos_hint={'center_x': 0.5})
         
@@ -498,16 +498,6 @@ class MainLayout(FloatLayout):
         shop_layout.add_widget(skill2_box)
         shop_layout.add_widget(skill3_box)
         vbox.add_widget(shop_layout)
-
-        test_layout = BoxLayout(size_hint=(0.9, None), height='60sp', spacing=18, pos_hint={'center_x': 0.5})
-        test_add_btn = Factory.SmoothButton(text="[Test] +10 Score", font_size='18sp', bg_color=(0.3, 0.6, 0.3, 1)) 
-        test_add_btn.bind(on_press=self.test_add_score)
-        test_reduce_btn = Factory.SmoothButton(text="[Test] -10 Score", font_size='18sp', bg_color=(0.7, 0.3, 0.3, 1)) 
-        test_reduce_btn.bind(on_press=self.test_reduce_score)
-
-        test_layout.add_widget(test_add_btn)
-        test_layout.add_widget(test_reduce_btn)
-        vbox.add_widget(test_layout)
 
         self.add_widget(vbox)
 
@@ -888,17 +878,6 @@ class MainLayout(FloatLayout):
         self.sound.play_wrong() # แจ้งเตือนเสียงผิด
         anim = Animation(color=(1, 0, 0, 1), duration=0.1) + Animation(color=(0.3, 0.9, 0.9, 1), duration=0.1)
         anim.start(self.score_label)
-
-    def test_add_score(self, instance):
-        self.logic.score += 10
-        self.pop_score_text()
-        self.update_ui()
-
-    def test_reduce_score(self, instance):
-        self.logic.score -= 10
-        if self.logic.score < 0:
-            self.logic.score = 0
-        self.update_ui()
     
     def on_ghost_hit(self):
         if self.hp.is_dead() or getattr(self.ghost, 'is_paused', False) or self.is_paused:
