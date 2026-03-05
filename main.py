@@ -23,6 +23,7 @@ from kivy.core.window import Window
 from kivy.uix.behaviors import ButtonBehavior
 import json
 from kivy.uix.spinner import Spinner
+from kivy.animation import Animation
 
 Window.minimum_width = 360
 Window.minimum_height = 640
@@ -65,7 +66,7 @@ Builder.load_string('''
 <CardBox@BoxLayout>:
     canvas.before:
         Color:
-            rgba: 0, 0, 0, 0.6 
+            rgba: 0, 0, 0, 0.65  # แก้ไขสีให้เข้มขึ้นตาม Commit 2
         RoundedRectangle:
             size: self.size
             pos: self.pos
@@ -124,72 +125,75 @@ Builder.load_string('''
             pos: self.pos
             size: self.size
             
-    BoxLayout:
-        orientation: 'vertical'
-        padding: [100, 50, 100, 50]
-        spacing: 30
-        
-        Label:
-            text: 'การตั้งค่า (Options)'
-            font_size: '50sp'
-            font_name: 'LEELAUIB.TTF'
-            color: 1, 0.8, 0.2, 1
-            size_hint_y: 0.3
-            bold: True
-            outline_width: 2
-            outline_color: 0, 0, 0, 1
-        
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: 0.3
-            size_hint_x: 0.8
-            pos_hint: {'center_x': 0.5}
-            spacing: 20
+    FloatLayout:
+        CardBox:
+            orientation: 'vertical'
+            size_hint: 0.85, 0.6
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: dp(30)
+            spacing: 30
             
-            SmoothButton:
-                text: '-'
-                font_size: '50sp'
-                size_hint_x: 0.2
-                bg_color: 0.8, 0.3, 0.3, 1
-                on_release: 
-                    app.sound.play_click()
-                    app.change_volume(-0.1)
-                
             Label:
-                text: f'ระดับเสียงดนตรี: {int(app.volume_level * 100)}%'
-                font_size: '35sp'
+                text: 'การตั้งค่า (Options)'
+                font_size: '50sp'
                 font_name: 'LEELAUIB.TTF'
-                size_hint_x: 0.6
+                color: 1, 0.8, 0.2, 1
+                size_hint_y: 0.3
+                bold: True
                 outline_width: 2
                 outline_color: 0, 0, 0, 1
+            
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: 0.3
+                size_hint_x: 0.8
+                pos_hint: {'center_x': 0.5}
+                spacing: 20
                 
+                SmoothButton:
+                    text: '-'
+                    font_size: '50sp'
+                    size_hint_x: 0.2
+                    bg_color: 0.8, 0.3, 0.3, 1
+                    on_release: 
+                        app.sound.play_click()
+                        app.change_volume(-0.1)
+                    
+                Label:
+                    text: f'ระดับเสียงดนตรี: {int(app.volume_level * 100)}%'
+                    font_size: '35sp'
+                    font_name: 'LEELAUIB.TTF'
+                    size_hint_x: 0.6
+                    outline_width: 2
+                    outline_color: 0, 0, 0, 1
+                    
+                SmoothButton:
+                    text: '+'
+                    font_size: '50sp'
+                    size_hint_x: 0.2
+                    bg_color: 0.2, 0.7, 0.3, 1
+                    on_release: 
+                        app.sound.play_click()
+                        app.change_volume(0.1)
+            
+            Widget:
+                size_hint_y: 0.1
+            
             SmoothButton:
-                text: '+'
-                font_size: '50sp'
-                size_hint_x: 0.2
-                bg_color: 0.2, 0.7, 0.3, 1
+                text: 'กลับ (Back)'
+                font_size: '30sp'
+                font_name: 'LEELAUIB.TTF'
+                size_hint_y: None
+                height: '80sp'
+                size_hint_x: 0.5
+                pos_hint: {'center_x': 0.5}
+                bg_color: 0.5, 0.5, 0.5, 1
                 on_release: 
                     app.sound.play_click()
-                    app.change_volume(0.1)
-        
-        Widget:
-            size_hint_y: 0.1
-        
-        SmoothButton:
-            text: 'กลับ (Back)'
-            font_size: '30sp'
-            font_name: 'LEELAUIB.TTF'
-            size_hint_y: None
-            height: '80sp'
-            size_hint_x: 0.5
-            pos_hint: {'center_x': 0.5}
-            bg_color: 0.5, 0.5, 0.5, 1
-            on_release: 
-                app.sound.play_click()
-                app.back_from_options()
-        
-        Widget:
-            size_hint_y: 0.3
+                    app.back_from_options()
+            
+            Widget:
+                size_hint_y: 0.3
 
 <SelectLevelScreen>:
     canvas.before:
@@ -930,7 +934,7 @@ class VocabGameApp(App):
                 child.reset_entire_game() 
                 child.start_game(category, level)
 
-# คลาสของหน้าตอนเล่นเกม
+# คลาสของหน้าตอนเล่นเกม (ซ้ำกับด้านบน แต่คงไว้ตามโครงสร้างเดิมให้)
 class GameScreen(Screen):
     def on_enter(self, *args):
         app = App.get_running_app()
