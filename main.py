@@ -35,7 +35,7 @@ class ImageButton(ButtonBehavior, Image):
     pass
 
 # ==========================================
-# Commit 1-5: คลาสสำหรับเอฟเฟกต์อักษรลอย (Floating Text)
+# คลาสสำหรับเอฟเฟกต์อักษรลอย (Floating Text)
 # ==========================================
 class FloatingText(Label):
     def __init__(self, text, start_pos, color=(1, 1, 0, 1), **kwargs):
@@ -59,7 +59,7 @@ class FloatingText(Label):
             self.parent.remove_widget(self)
 
 # ==========================================
-# 1. สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
+# สร้าง Class SmoothButton (ปุ่มขอบโค้ง)
 # ==========================================
 class SmoothButton(Button):
     bg_color = ListProperty([0.5, 0.5, 0.5, 1])  
@@ -905,14 +905,31 @@ class MainLayout(FloatLayout):
             
     def trigger_game_over(self):
         self.sound.play_gameover()
+        
+        # เปลี่ยนข้อความและตกแต่งสีให้เข้ากับธีม
         self.word_label.text = "RUH-ROH! GAME OVER!"
-        Animation(font_size=sp(65), transition='out_bounce', duration=0.5).start(self.word_label)
-        self.underscore_label.text = ""
+        self.word_label.color = (1, 0.2, 0.2, 1)  # สีแดงสด
+        self.word_label.outline_width = 3
+        self.word_label.outline_color = (0, 0, 0, 1) # ขอบดำ
+        
+        # แอนิเมชันเด้งและขยายขนาดตัวอักษร
+        anim_gameover = Animation(font_size=sp(80), transition='out_elastic', duration=0.8)
+        anim_gameover.start(self.word_label)
+        
+        # แสดงคะแนนสุดท้ายให้ชัดเจน
+        self.underscore_label.text = f"คะแนนสุดท้าย: {self.logic.score}"
+        self.underscore_label.color = (1, 0.8, 0.2, 1) # สีเหลืองทอง
+        
         self.answer_input.disabled = True
+        
+        # ทำให้ฉากหลังเป็นสีแดงเข้มโปร่งแสงเพื่อเน้นอารมณ์ Game Over
+        self.flash_screen((0.5, 0, 0, 0.7)) 
+        
         if self.timer_event:
             self.timer_event.cancel()
             self.timer_event = None
-        Clock.schedule_once(self.return_to_main_menu_auto, 4.0)
+            
+        Clock.schedule_once(self.return_to_main_menu_auto, 5.0) # เพิ่มเวลาโชว์ฉากจบเป็น 5 วินาที
     
     def setup_ghost_position(self, dt):
         self.ghost.start_x = self.width + 100
