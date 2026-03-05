@@ -318,9 +318,8 @@ Builder.load_string('''
 ''')
 
 # ==========================================
-# 2. จัดการหน้าจอต่างๆ 
+# Commit 6: feat: setup screen manager and base screens
 # ==========================================
-
 class MainMenuScreen(Screen):
     def on_enter(self, *args):
         app = App.get_running_app()
@@ -334,6 +333,9 @@ class SelectLevelScreen(Screen):
 
 class GameScreen(Screen):
     def on_enter(self, *args):
+        app = App.get_running_app()
+        app.sound.play_game_bgm()
+
         for child in self.children:
             if isinstance(child, MainLayout):
                 child.on_screen_enter()
@@ -907,7 +909,7 @@ class FloatingText(Label):
         self.pos = start_pos
         self.outline_width = 2
         self.outline_color = (0, 0, 0, 1)
-        # เพิ่ม transition ให้สมบูรณ์ (ในรูปโดนตัด) ปกติใช้ out_quad
+        # เพิ่ม transition ให้สมบูรณ์ ปกติใช้ out_quad
         anim = Animation(y=self.pos[1] + dp(100), opacity=0, duration=1.0, transition='out_quad')
         anim.bind(on_complete=self.remove_me)
         anim.start(self)
@@ -939,17 +941,16 @@ class VocabGameApp(App):
 
         sm = ScreenManager()
         
-        menu_screen = MainMenuScreen(name='main_menu')
-        options_screen = OptionsScreen(name='options_screen')
-        select_level_screen = SelectLevelScreen(name='select_level') 
-        game_screen = GameScreen(name='game_screen')
+        # เพิ่มหน้าจอต่างๆ ลงใน ScreenManager ตาม Commit 6
+        sm.add_widget(MainMenuScreen(name='main_menu'))
+        sm.add_widget(SelectLevelScreen(name='select_level')) 
+        sm.add_widget(OptionsScreen(name='options_screen'))
         
+        # สำหรับ GameScreen เนื่องจากของเดิมมีการส่งค่า MainLayout ไปด้วย ผมจึงคงรูปแบบเดิมไว้ให้ครับ 
+        # เพื่อไม่ให้เกมมีปัญหา
+        game_screen = GameScreen(name='game_screen')
         game_layout = MainLayout()
         game_screen.add_widget(game_layout)
-        
-        sm.add_widget(menu_screen)
-        sm.add_widget(select_level_screen) 
-        sm.add_widget(options_screen)
         sm.add_widget(game_screen)
         
         return sm
@@ -977,16 +978,6 @@ class VocabGameApp(App):
             if isinstance(child, MainLayout):
                 child.reset_entire_game() 
                 child.start_game(category, level)
-
-# คลาสของหน้าตอนเล่นเกม (ซ้ำกับด้านบน แต่คงไว้ตามโครงสร้างเดิมให้)
-class GameScreen(Screen):
-    def on_enter(self, *args):
-        app = App.get_running_app()
-        app.sound.play_game_bgm()
-
-        for child in self.children:
-            if isinstance(child, MainLayout):
-                child.on_screen_enter()
 
 if __name__ == "__main__":
     VocabGameApp().run()
