@@ -419,6 +419,9 @@ class MainLayout(FloatLayout):
         status_card.add_widget(self.combo_label)
         self.main_vbox.add_widget(status_card)
 
+        # ==========================================
+        # Commit 12: ui: add gameplay area to MainLayout
+        # ==========================================
         game_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.5), spacing=15)
         self.word_label = Label(text=f"ปริศนา: {self.current_word['thai']}", font_size='50sp', bold=True, color=(1, 1, 1, 1), size_hint=(1, 0.25))
         
