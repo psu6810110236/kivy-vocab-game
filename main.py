@@ -889,6 +889,29 @@ LabelBase.register(DEFAULT_FONT, 'LEELAUIB.TTF')
 class ImageButton(ButtonBehavior, Image):
     pass
 
+# ==========================================
+# Commit 4: ui: create FloatingText animation class
+# ==========================================
+class FloatingText(Label):
+    def __init__(self, text, start_pos, color=(1, 1, 0, 1), **kwargs):
+        super().__init__(**kwargs)
+        self.text = text
+        self.font_size = '30sp'
+        self.bold = True
+        self.color = color
+        self.size_hint = (None, None)
+        self.pos = start_pos
+        self.outline_width = 2
+        self.outline_color = (0, 0, 0, 1)
+        # เพิ่ม transition ให้สมบูรณ์ (ในรูปโดนตัด) ปกติใช้ out_quad
+        anim = Animation(y=self.pos[1] + dp(100), opacity=0, duration=1.0, transition='out_quad')
+        anim.bind(on_complete=self.remove_me)
+        anim.start(self)
+
+    def remove_me(self, *args):
+        if self.parent:
+            self.parent.remove_widget(self)
+
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
     bg_music = None
