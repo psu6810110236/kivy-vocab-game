@@ -44,6 +44,6 @@ class GameLogic:
         if self.score >= cost:
             self.score -= cost
             if len(word) > 2:
-                return f"{word[:2]}{'_' * (len(word) - 2)}"
-            return f"{word[0]}_"
+                return word[:2]
+            return word[0]
         return None
