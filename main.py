@@ -71,11 +71,10 @@ UI_KV = '''
             size: self.size
             pos: self.pos
             radius: [20]
-'''
-Builder.load_string(UI_KV)
 
-# --- โหลดหน้าจอต่างๆ ตามโค้ดเดิม ---
-Builder.load_string('''
+# ==========================================
+# Commit 7: ui: build MainMenuScreen layout
+# ==========================================
 <MainMenuScreen>:
     FloatLayout:
         Image:
@@ -116,7 +115,11 @@ Builder.load_string('''
             on_release:
                 app.sound.play_click()
                 app.stop()
+'''
+Builder.load_string(UI_KV)
 
+# --- โหลดหน้าจออื่นๆ ตามโค้ดเดิม ---
+Builder.load_string('''
 <OptionsScreen>:
     canvas.before:
         Rectangle:
