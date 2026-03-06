@@ -1130,7 +1130,7 @@ class MainLayout(FloatLayout):
         self.time_speed = 1.00
         self.time_bar.max = 60
         self.ghost.reset()
-        self.ghost.is_paused = False
+        self.ghost.is_paused = True
         self.answer_input.disabled = False
         self.word_label.color = (1, 1, 1, 1)
 
