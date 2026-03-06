@@ -10,7 +10,7 @@ from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.uix.progressbar import ProgressBar
 from kivy.graphics import Color, Rectangle
 from kivy.lang import Builder
-from kivy.properties import ListProperty, NumericProperty 
+
 from kivy.factory import Factory
 from kivy.uix.widget import Widget 
 import random
@@ -25,7 +25,7 @@ import json
 from kivy.uix.spinner import Spinner
 from kivy.animation import Animation
 import os
-
+from kivy.properties import ListProperty, NumericProperty, StringProperty
 Window.minimum_width = 360
 Window.minimum_height = 640
 
@@ -67,6 +67,47 @@ class SmoothButton(Button):
     radius = ListProperty([25]) 
     shadow_color = ListProperty([0, 0, 0, 0.3])  
 
+class AnimatedScooby(Image):
+    state = StringProperty('idle')
+    frame = NumericProperty(1)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # กำหนดว่าแต่ละท่ามีกี่รูป (ถ้าอนาคตมี 3 รูปก็มาแก้เลขตรงนี้ได้)
+        self.max_frames = {'idle': 2, 'happy': 2, 'scared': 2} 
+        
+        # เปลี่ยนรูปทุกๆ 0.2 วินาที (ปรับความเร็วตรงนี้ได้)
+        Clock.schedule_interval(self.update_frame, 0.2)
+
+    def update_frame(self, dt):
+        if self.state == 'idle':
+            speed = 0.9   # ท่ายืนปกติ สลับรูปทุก 0.5 วิ
+        elif self.state == 'happy':
+            speed = 0.2   # <--- ท่าดีใจ ปรับให้ช้าลง มองทันแน่นอน
+        else:
+            speed = 0.15  # ท่าตกใจ ปรับให้สลับเร็วๆ รัวๆ
+            
+        Clock.unschedule(self.update_frame)
+        Clock.schedule_once(self.update_frame, speed)
+
+        self.frame += 1
+        if self.frame > self.max_frames.get(self.state, 1):
+            self.frame = 1
+        
+        file_path = f'assets/images/scooby_{self.state}_{self.frame}.png'
+        if os.path.exists(file_path):
+            self.source = file_path
+
+    def change_state(self, new_state, duration=1.0):
+        self.state = new_state
+        self.frame = 1
+        Clock.unschedule(self.reset_to_idle)
+        if duration > 0:
+            Clock.schedule_once(self.reset_to_idle, duration)
+
+    def reset_to_idle(self, dt=None):
+        self.state = 'idle'
+        self.frame = 1
 # --- โหลดสไตล์ UI พิเศษ ---
 Builder.load_string('''
 <SmoothButton>:
@@ -398,12 +439,12 @@ Builder.load_string('''
     # ---------------------------
     # ตัวละครหลัก (Scooby) ฝั่งซ้าย
     # ---------------------------
-    Image:
+    AnimatedScooby:
         id: scooby
-        source: "assets/images/scooby.png"
+        source: "assets/images/scooby_idle_1.png"
         size_hint: None, None
-        size: dp(310), dp(310) # ปรับขนาดให้พอดี ไม่บัง UI ล่าง
-        pos_hint: {'x': 0.05, 'y': 0.30} 
+        size: dp(310), dp(310)
+        pos_hint: {'x': 0.05, 'y': 0.30}
 
     # ---------------------------
     # UI สเตตัสด้านบน
@@ -944,9 +985,17 @@ class MainLayout(FloatLayout):
 
     def idle_animations(self, dt):
         if not self.is_paused and not getattr(self.ghost, 'is_paused', True):
-            anim = Animation(y=self.scooby.y + 10, duration=0.5) + Animation(y=self.scooby.y, duration=0.5)
+            
+            # --- แก้ไขของ Scooby ---
+            # ใช้การอ้างอิงจากตำแหน่งดั้งเดิม (ยึดตามที่ตั้งไว้ใน KV ว่า pos_hint: {'y': 0.30})
+            base_scooby_y = self.height * 0.30  
+            anim = Animation(y=base_scooby_y + dp(10), duration=0.5) + Animation(y=base_scooby_y, duration=0.5)
             anim.start(self.scooby)
-            g_anim = Animation(y=self.ghost.y + 20, duration=0.5) + Animation(y=self.ghost.y, duration=0.5)
+
+            # --- แก้ไขของผี ---
+            # ใช้การอ้างอิงจากตำแหน่งดั้งเดิมที่เราตั้งไว้ใน setup_ghost_position
+            base_ghost_y = base_scooby_y - dp(10) 
+            g_anim = Animation(y=base_ghost_y + dp(20), duration=0.5) + Animation(y=base_ghost_y, duration=0.5)
             g_anim.start(self.ghost)
 
     def trigger_screen_shake(self):
@@ -1047,7 +1096,7 @@ class MainLayout(FloatLayout):
         self.word_label.color = (1, 1, 1, 1) 
         self.ghost.reset()
         self.ghost.is_paused = False
-        
+        self.scooby.reset_to_idle()
         self.answer_input.disabled = False
         self.next_word()
         self.update_ui()
@@ -1118,7 +1167,7 @@ class MainLayout(FloatLayout):
         if self.timer_event:
             self.timer_event.cancel()
             self.timer_event = None
-            
+            self.scooby.reset_to_idle()
         if getattr(self, 'spooky_timer', None):
             self.spooky_timer.cancel()
             self.spooky_timer = None
@@ -1183,7 +1232,7 @@ class MainLayout(FloatLayout):
         
         if is_correct:
             self.sound.play_correct()
-            
+            self.scooby.change_state('happy', duration=1.0)
             speed_bonus = 0
             rating_text = ""
             r_color = (1, 1, 1, 1)
@@ -1297,7 +1346,7 @@ class MainLayout(FloatLayout):
             return
         self.time_left = 0
         self.hp.take_damage()
-        
+        self.scooby.change_state('scared', duration=2.5)
         self.trigger_screen_shake()
         self.flash_screen((1, 0, 0, 0.5))
         self.add_widget(FloatingText("-1 HP!", (self.hp_label.x, self.hp_label.y), color=(1,0,0,1)))
@@ -1346,21 +1395,21 @@ class MainLayout(FloatLayout):
     # ----------------------------------------------------------------------
     def setup_ghost_position(self, dt):
         self.ghost.size_hint = (None, None)
-        
+        self.ghost.pos_hint = {}
         # 1. ปรับขนาดผี (กว้าง, สูง) ตรงนี้ปรับตัวเลขให้เข้ากับสัดส่วนภาพผีได้เลยครับ
-        self.ghost.size = (dp(450), dp(450)) 
+        self.ghost.size = (dp(300), dp(300)) 
         
         self.ghost.start_x = self.width + 50
         if not self.game_started:
             self.ghost.x = self.ghost.start_x
             
-        self.ghost.end_x = self.scooby.right + dp(10)
+        self.ghost.end_x = self.scooby.right - dp(10)
         
         # 2. ปรับระดับความสูง (Y) ของผี
         # ถ้าภาพผีดู "จมดิน" ให้บวกเพิ่ม เช่น self.scooby.y + dp(20)
         # ถ้าภาพผีดู "ลอยไป" ให้ลบออก เช่น self.scooby.y - dp(20)
-        self.ghost.y = self.scooby.y + dp(180)
-
+        base_scooby_y = self.height * 0.30
+        self.ghost.y = base_scooby_y + dp(10)
     def on_resize(self, *args):
         self.setup_ghost_position(0)
 
@@ -1368,6 +1417,8 @@ class MainLayout(FloatLayout):
         if self.hp.is_dead() or self.is_paused:
             return
         self.ghost.reset()
+        Animation.cancel_all(self.ghost, 'y') 
+        self.setup_ghost_position(0)
         self.ghost.is_paused = False
         self.next_word()
         self.answer_input.disabled = False
@@ -1398,6 +1449,8 @@ class MainLayout(FloatLayout):
         self.spooky_timer = Clock.schedule_interval(self.try_spooky_event, 2.0)
         
         self.ghost.reset()
+        Animation.cancel_all(self.ghost, 'y')
+        self.setup_ghost_position(0)
         self.ghost.is_paused = False
         self.answer_input.disabled = False
         

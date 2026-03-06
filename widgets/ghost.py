@@ -10,8 +10,10 @@ class Ghost(Image):
         self.size = (650, 650)
 
         self.start_x = Window.width + 100    # เริ่มขวาสุด
-        self.end_x = 80      # ตำแหน่ง Scooby
-        self.pos = (self.start_x, 120)
+        self.end_x = 80
+        self.x = self.start_x
+        self.y = -10    # ตำแหน่ง Scooby
+        
 
         self.travel_time = travel_time
         self.elapsed_time = 0
