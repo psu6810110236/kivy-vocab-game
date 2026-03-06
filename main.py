@@ -885,12 +885,21 @@ class MainLayout(FloatLayout):
                 anim = Animation(flash_color=[0, 0, 0, 0.95], duration=0.1) + Animation(flash_color=[0, 0, 0, 0], duration=0.6)
                 anim.start(self)
                 
-                og_pos = self.pos
-                shake = Animation(pos=(og_pos[0]-25, og_pos[1]+25), duration=0.05) + \
-                        Animation(pos=(og_pos[0]+25, og_pos[1]-25), duration=0.05) + \
-                        Animation(pos=(og_pos[0]-15, og_pos[1]-15), duration=0.05) + \
-                        Animation(pos=og_pos, duration=0.05)
-                shake.start(self)
+                # --- ส่วนที่แก้ใหม่ ---
+                if not getattr(self, 'is_shaking', False):
+                    self.is_shaking = True
+                    og_pos = (self.x, self.y)
+                    shake = Animation(pos=(og_pos[0]-25, og_pos[1]+25), duration=0.05) + \
+                            Animation(pos=(og_pos[0]+25, og_pos[1]-25), duration=0.05) + \
+                            Animation(pos=(og_pos[0]-15, og_pos[1]-15), duration=0.05) + \
+                            Animation(pos=og_pos, duration=0.05)
+                    
+                    def reset_thunder_shake(*args):
+                        self.pos = og_pos
+                        self.is_shaking = False
+                        
+                    shake.bind(on_complete=reset_thunder_shake)
+                    shake.start(self)
                 
             elif event == 'poltergeist':
                 self.word_label.color = (1, 0.2, 0.2, 1) 
@@ -941,10 +950,23 @@ class MainLayout(FloatLayout):
             g_anim.start(self.ghost)
 
     def trigger_screen_shake(self):
-        og_pos = self.pos
+        # เช็คว่าถ้าจอกำลังสั่นอยู่ ให้ข้ามไปเลย จะได้ไม่จำตำแหน่งผิด
+        if getattr(self, 'is_shaking', False):
+            return
+            
+        self.is_shaking = True
+        og_pos = (self.x, self.y) # จำตำแหน่งดั้งเดิม
+        
         anim = Animation(pos=(og_pos[0]-15, og_pos[1]+15), duration=0.05) + \
                Animation(pos=(og_pos[0]+15, og_pos[1]-15), duration=0.05) + \
                Animation(pos=og_pos, duration=0.05)
+               
+        # เมื่อสั่นจบ บังคับให้หน้าจอกลับมาจุดเดิมเป๊ะๆ พร้อมคืนค่าสถานะ
+        def reset_shake(*args):
+            self.pos = og_pos
+            self.is_shaking = False
+            
+        anim.bind(on_complete=reset_shake)
         anim.start(self)
 
     def flash_screen(self, color=(1, 0, 0, 0.5)):
