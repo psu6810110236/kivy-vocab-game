@@ -9,6 +9,7 @@ class SoundManager:
         self.menu_bgm = SoundLoader.load('assets/sound/music/menu_theme.mp3')
         self.game_bgm = SoundLoader.load('assets/sound/music/theme.mp3')
         self.shop_eror = SoundLoader.load('assets/sound/shop_error.mp3')
+        self.typing_sound = SoundLoader.load('assets/sound/typing.mp3')
         # 2. ตั้งค่าระดับเสียงและการวนลูป (Loop)
         if self.menu_bgm:
             self.menu_bgm.volume = 0.3
@@ -21,6 +22,15 @@ class SoundManager:
         # ปรับความดังได้
         if self.click:
             self.click.volume = 0.5
+
+        self.typing_sounds = []
+        for _ in range(5): 
+            sound = SoundLoader.load('assets/sound/typing.mp3')
+            # แนะนำ: ถ้าเสียงยังหน่วง ลองเปลี่ยนไฟล์จาก .mp3 เป็น .wav จะทำงานได้ไวกว่าใน Kivy ครับ
+            if sound:
+                self.typing_sounds.append(sound)
+        
+        self.typing_index = 0
 
     def play_correct(self):
         if self.correct:
@@ -40,10 +50,24 @@ class SoundManager:
         if self.gameover:
             self.gameover.stop()
             self.gameover.play()
+    
+    def play_typing_sound(self):
+        if self.typing_sounds:
+            # ดึงเสียงก้อนปัจจุบันออกมาเล่น
+            sound = self.typing_sounds[self.typing_index]
+            
+            if sound.state == 'play':
+                sound.stop()
+            sound.play()
+            
+            # ขยับคิวไปเล่นก้อนถัดไป (ถ้าครบ 5 ก็วนกลับไป 0 ใหม่)
+            self.typing_index += 1
+            if self.typing_index >= len(self.typing_sounds):
+                self.typing_index = 0
 
-    def play_click(self):   # 👈 เพิ่มฟังก์ชันนี้
+    def play_click(self):   
         if self.click:
-            self.click.stop()   # กันเสียงซ้อน
+            self.click.stop()   
             self.click.play()
 
     def play_menu_bgm(self):

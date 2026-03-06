@@ -821,7 +821,9 @@ class MainLayout(FloatLayout):
         english_word = self.current_word.get('english', '')
         if english_word == 'loading' or not english_word:
             return
-            
+        
+        if value != "":
+            self.sound.play_typing_sound()
         display_chars = []
         typed_idx = 0
         
