@@ -383,7 +383,18 @@ Builder.load_string('''
         Rectangle:
             size: self.size
             pos: self.pos
-
+    Label:
+        id: level_label
+        text: "ด่าน: 1"
+        font_size: '28sp'
+        font_name: 'LEELAUIB.TTF'
+        bold: True
+        color: 1, 0.85, 0.1, 1
+        outline_width: 2
+        outline_color: 0, 0, 0, 1
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'center_x': 0.511, 'top': 0.98}
     # ---------------------------
     # ตัวละครหลัก (Scooby) ฝั่งซ้าย
     # ---------------------------
@@ -542,7 +553,7 @@ Builder.load_string('''
                 # --- ลบ canvas.before เดิมที่วาด RoundedRectangle และ Line ออก ---
 
             SmoothButton:
-                text: "Submit"
+                text: ""
                 font_name: 'LEELAUIB.TTF'
                 font_size: '25sp' 
                 bold: True
@@ -799,6 +810,7 @@ class MainLayout(FloatLayout):
         self.combo_label = self.ids.combo_label
         self.word_label = self.ids.word_label
         self.underscore_label = self.ids.underscore_label
+        self.level_label = self.ids.level_label
         self.answer_input = self.ids.answer_input
         self.scooby = self.ids.scooby
         self.pause_overlay = self.ids.pause_overlay
@@ -955,9 +967,9 @@ class MainLayout(FloatLayout):
 
     def load_vocabulary(self, category_name, level):
         cat_map = {
-            'สัตว์และธรรมชาติ': 'nature',
-            'ชีวิตประจำวัน': 'daily',
-            'วิทยาศาสตร์ ไอที และวิศวกรรม': 'science_it'
+            'Animals & Nature': 'nature',
+            'Daily Life': 'daily',
+            'Science, IT & Engineering': 'science_it'
         }
         json_key = cat_map.get(category_name, 'daily')
         
@@ -1131,7 +1143,8 @@ class MainLayout(FloatLayout):
         self.score_label.text = f"Score: {self.logic.score}"
         self.combo_label.text = f"Combo: x{self.logic.combo_multiplier}"
         lvl = getattr(self, 'current_level', 1)
-        self.word_label.text = f"[ด่าน {lvl}] {self.current_word['thai']}"
+        self.level_label.text = f"STAGE {lvl}"
+        self.word_label.text = f"{self.current_word['thai']}"
         
         self.on_text_change(self.answer_input, self.answer_input.text)
 
