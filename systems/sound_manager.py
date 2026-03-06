@@ -8,7 +8,7 @@ class SoundManager:
         self.click = SoundLoader.load("assets/sound/click_start_botton.mp3")  # 👈 เพิ่มตรงนี้
         self.menu_bgm = SoundLoader.load('assets/sound/music/menu_theme.mp3')
         self.game_bgm = SoundLoader.load('assets/sound/music/theme.mp3')
-        
+        self.shop_eror = SoundLoader.load('assets/sound/shop_error.mp3')
         # 2. ตั้งค่าระดับเสียงและการวนลูป (Loop)
         if self.menu_bgm:
             self.menu_bgm.volume = 0.3
@@ -31,6 +31,10 @@ class SoundManager:
         if self.wrong:
             self.wrong.stop()
             self.wrong.play()
+    def play_noscore(self):
+        if self.shop_eror:
+            self.shop_eror.stop()
+            self.shop_eror.play()
 
     def play_gameover(self):
         if self.gameover:
