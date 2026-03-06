@@ -489,7 +489,7 @@ Builder.load_string('''
         orientation: 'vertical'
         size_hint: 1, None
         height: dp(150) 
-        pos_hint: {'center_x': 0.5, 'y': 0.55} # ปรับให้มีพื้นที่หายใจตรงกลางมากขึ้น
+        pos_hint: {'center_x': 0.496, 'y': 0.55} # ปรับให้มีพื้นที่หายใจตรงกลางมากขึ้น
         spacing: dp(0)
         Label:
             id: word_label
@@ -1011,10 +1011,11 @@ class MainLayout(FloatLayout):
         self.word_label.color = (1, 1, 1, 1) 
         self.ghost.reset()
         self.ghost.is_paused = False
+        
         self.answer_input.disabled = False
-        self.answer_input.focus = True
         self.next_word()
         self.update_ui()
+        Clock.schedule_once(self._force_focus, 0.3)
 
     def return_to_main_menu_auto(self, dt):
         self.reset_entire_game()
@@ -1024,13 +1025,18 @@ class MainLayout(FloatLayout):
     def on_screen_enter(self):
         Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
 
-    def _force_focus(self):
-        if self.is_paused or getattr(self.ghost, 'is_paused', False) or self.hp.is_dead():
+    def _force_focus(self, dt=None):
+        # ตรวจสอบว่าเกมไม่ได้หยุด หรือตายอยู่
+        if self.is_paused or self.hp.is_dead():
             return
             
-        if not self.vocab_pool: 
+        # ถ้าไม่มีคำศัพท์เหลือแล้ว (จบด่าน) ก็ไม่ต้อง Focus
+        if not self.vocab_pool and not getattr(self, 'current_word', None): 
             return
+
+        # เปิดใช้งาน และย้ำ Focus (False แล้วค่อย True)
         self.answer_input.disabled = False
+        self.answer_input.focus = False
         self.answer_input.focus = True
 
     def _on_keyboard(self, window, key, scancode, codepoint, modifier):
@@ -1244,7 +1250,7 @@ class MainLayout(FloatLayout):
             self.flash_shop_error()
             
     def flash_shop_error(self):
-        self.sound.play_wrong() 
+        self.sound.play_noscore() 
         anim = Animation(color=(1, 0, 0, 1), duration=0.1) + Animation(color=(0.3, 0.9, 0.9, 1), duration=0.1)
         anim.start(self.score_label)
     
@@ -1331,7 +1337,7 @@ class MainLayout(FloatLayout):
         self.time_left = 16.0
         self.time_speed = 1.0
         self.time_bar.value = self.time_left
-
+        Clock.schedule_once(self._force_focus, 0.2)
     def start_game(self, category, level):
         self.current_category = category
         self.current_level = int(level)
@@ -1356,8 +1362,10 @@ class MainLayout(FloatLayout):
         self.ghost.reset()
         self.ghost.is_paused = False
         self.answer_input.disabled = False
+        
         self.next_word()
         self.update_ui()
+        Clock.schedule_once(self._force_focus, 0.3)
 
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
