@@ -1193,6 +1193,7 @@ class MainLayout(FloatLayout):
             Clock.schedule_once(lambda dt: self._force_focus(), 0.1)
             
         else:
+            self.sound.play_wrong_answer()
             self.answer_input.text = "" 
             
             anim_shake = Animation(x=self.answer_input.x-10, duration=0.05) + Animation(x=self.answer_input.x+10, duration=0.05) + Animation(x=self.answer_input.x, duration=0.05)

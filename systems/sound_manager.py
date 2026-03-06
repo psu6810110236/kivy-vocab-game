@@ -10,6 +10,7 @@ class SoundManager:
         self.game_bgm = SoundLoader.load('assets/sound/music/theme.mp3')
         self.shop_eror = SoundLoader.load('assets/sound/shop_error.mp3')
         self.typing_sound = SoundLoader.load('assets/sound/typing.mp3')
+        self.wrong_answer_sound = SoundLoader.load('assets/sound/wrong_answer.mp3')
         # 2. ตั้งค่าระดับเสียงและการวนลูป (Loop)
         if self.menu_bgm:
             self.menu_bgm.volume = 0.3
@@ -65,6 +66,11 @@ class SoundManager:
             if self.typing_index >= len(self.typing_sounds):
                 self.typing_index = 0
 
+    def play_wrong_answer(self):
+        if self.wrong_answer_sound:
+            self.wrong_answer_sound.stop()
+            self.wrong_answer_sound.play()
+    
     def play_click(self):   
         if self.click:
             self.click.stop()   
