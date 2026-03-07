@@ -1370,9 +1370,18 @@ class MainLayout(FloatLayout):
         self.answer_input.disabled = True 
         self.update_ui()
         
+        # ✅ เพิ่มระบบเฉลยคำศัพท์ตรงนี้
+        correct_ans = self.current_word.get("english", "")
+        # จัดตัวอักษรให้มีช่องว่าง (เช่น A P P L E) จะได้เนียนไปกับช่องว่างเดิม
+        spaced_ans = " ".join(list(correct_ans.upper()))
+        self.underscore_label.text = spaced_ans
+        self.underscore_label.color = (1, 0.2, 0.2, 1) # เปลี่ยนเป็นสีแดงให้รู้ว่าเฉลย
+        
         if self.hp.is_dead():
-            self.trigger_game_over()
+            # ถ้าเลือดหมด ให้โชว์เฉลยค้างไว้ 1.5 วินาที ก่อนจะเด้งหน้า GAME OVER
+            Clock.schedule_once(lambda dt: self.trigger_game_over(), 1.5)
         else:
+            # ถ้าเลือดยังเหลือ ให้โชว์เฉลยค้างไว้ 2 วินาที แล้วเริ่มคำศัพท์ใหม่
             Clock.schedule_once(self.reset_ghost_after_hit, 2.0)
             
     def trigger_game_over(self):
