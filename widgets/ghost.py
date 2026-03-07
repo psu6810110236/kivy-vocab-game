@@ -1,41 +1,28 @@
 from kivy.uix.image import Image
-from kivy.clock import Clock
 from kivy.core.window import Window
 
 class Ghost(Image):
-    def __init__(self, on_hit_callback, travel_time=15, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.source = "assets/images/gostss.png"
         self.size_hint = (None, None)
-        self.size = (650, 650)
+        self.size = (300, 300)
 
-        self.start_x = Window.width + 100    # เริ่มขวาสุด
+        self.start_x = Window.width + 100    
         self.end_x = 80
         self.x = self.start_x
-        self.y = -10    # ตำแหน่ง Scooby
         
-
-        self.travel_time = travel_time
-        self.elapsed_time = 0
-        self.on_hit_callback = on_hit_callback
         self.is_paused = False
-        Clock.schedule_interval(self.update, 1/60)
 
-    def update(self, dt):
-        # ✅ 1. เพิ่มเงื่อนไข ถ้าโดนสั่ง pause ไว้ ให้หยุดการทำงานตรงนี้เลย ผีจะได้ค้างที่เดิม
-        if self.is_paused:
+    def sync_position(self, current_time, max_time):
+        # ฟังก์ชันให้ main.py จับผีวางตามสัดส่วนเวลาเป๊ะๆ
+        if self.is_paused or max_time <= 0:
             return
-
-        self.elapsed_time += dt
-        progress = self.elapsed_time / self.travel_time
-
-        self.x = self.start_x - (self.start_x - self.end_x) * progress
-
-        if progress >= 1:
-            self.on_hit_callback()
-            # ✅ 2. ลบคำสั่ง self.reset() ตรงนี้ออก 
-            # เพื่อให้ภาพผีค้างอยู่ที่ตัว Scooby ก่อน รอจนกว่า main.py จะสั่ง reset_ghost_after_hit
+        
+        progress = current_time / max_time
+        progress = max(0.0, min(1.0, progress))
+        
+        self.x = self.end_x + (self.start_x - self.end_x) * progress
 
     def reset(self):
-        self.elapsed_time = 0
         self.x = self.start_x

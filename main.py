@@ -859,7 +859,7 @@ class MainLayout(FloatLayout):
         # ผูกฟังก์ชันเพื่อดักข้อความเวลาพิมพ์
         self.answer_input.bind(text=self.on_text_change)
 
-        self.ghost = Ghost(on_hit_callback=self.on_ghost_hit)
+        self.ghost = Ghost()
         self.ghost.is_paused = True
         self.add_widget(self.ghost)
         self.remove_widget(self.pause_overlay)
@@ -1091,7 +1091,7 @@ class MainLayout(FloatLayout):
         self.load_vocabulary(self.current_category, str(self.current_level))
         self.time_left = 16.0
         self.time_speed = 1.0 + (self.current_level * 0.1) 
-        self.time_bar.max = 60
+        self.time_bar.max = 16.0
         self.hp.current_hp = self.hp.max_hp
         self.word_label.color = (1, 1, 1, 1) 
         self.ghost.reset()
@@ -1177,7 +1177,7 @@ class MainLayout(FloatLayout):
         self.logic = GameLogic(self.hp)
         self.time_left = 16.0
         self.time_speed = 1.00
-        self.time_bar.max = 60
+        self.time_bar.max = 16.0
         self.ghost.reset()
         self.ghost.is_paused = True
         self.answer_input.disabled = False
@@ -1190,12 +1190,20 @@ class MainLayout(FloatLayout):
             return 
         if not self.game_started:
             return
-        self.time_speed += 0.001 
+            
+        self.time_speed += 0.01 * dt 
         if self.time_speed > 3.0: 
             self.time_speed = 3.0
-        self.time_left -= (self.time_speed * 0.1)
+            
+        self.time_left -= (self.time_speed * dt)
+        
+        # 1. ผีเดินเนียนๆ 60 เฟรมต่อวิ
+        self.ghost.sync_position(max(0.0, self.time_left), 16.0)
+        
         if self.time_left <= 0:
             self.time_left = 0
+            self.on_ghost_hit() 
+            return
             
         if self.time_left > 10:
             t_color = (0.2, 1, 0.2, 1) 
@@ -1204,10 +1212,14 @@ class MainLayout(FloatLayout):
         else:
             t_color = (1, 0.2, 0.2, 1) 
             
-        self.time_label.color = t_color
-        self.time_label.text = f"Time: {int(self.time_left)}s"
-        
-        Animation(value=self.time_left, duration=0.1).start(self.time_bar)
+        # 2. ✅ จุดแก้กระตุก! อัปเดต Text เฉพาะตอนที่ตัวเลขวินาทีเปลี่ยนเท่านั้น
+        new_time_text = f"Time: {int(self.time_left)}s"
+        if self.time_label.text != new_time_text:
+            self.time_label.text = new_time_text
+            self.time_label.color = t_color
+            
+        # หลอด Progress bar เลื่อนได้ลื่นๆ ไม่มีปัญหา
+        self.time_bar.value = self.time_left
 
     def update_ui(self):
         self.hp_label.text = f"Snacks: {self.hp.current_hp}/{self.hp.max_hp}"
@@ -1322,7 +1334,7 @@ class MainLayout(FloatLayout):
         if self.logic.score >= cost:
             self.logic.score -= cost
             if hasattr(self, 'ghost'):
-                self.ghost.reset()
+                
                 self.ghost.is_paused = False
             
             self.time_speed = 0.75 
@@ -1409,7 +1421,7 @@ class MainLayout(FloatLayout):
         # ถ้าภาพผีดู "จมดิน" ให้บวกเพิ่ม เช่น self.scooby.y + dp(20)
         # ถ้าภาพผีดู "ลอยไป" ให้ลบออก เช่น self.scooby.y - dp(20)
         base_scooby_y = self.height * 0.30
-        self.ghost.y = base_scooby_y + dp(10)
+        self.ghost.y = base_scooby_y - dp(10)
     def on_resize(self, *args):
         self.setup_ghost_position(0)
 
@@ -1442,7 +1454,7 @@ class MainLayout(FloatLayout):
         
         if getattr(self, 'timer_event', None):
             self.timer_event.cancel()
-        self.timer_event = Clock.schedule_interval(self.update_timer, 0.1)
+        self.timer_event = Clock.schedule_interval(self.update_timer, 1/60.0)
         
         if getattr(self, 'spooky_timer', None):
             self.spooky_timer.cancel()
