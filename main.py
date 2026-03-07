@@ -304,8 +304,8 @@ Builder.load_string('''
         # --- กลุ่มปุ่มหมวดหมู่ (วางทับตำแหน่งกระดาษในรูป) ---
         BoxLayout:
             orientation: 'vertical'
-            size_hint: (0.6, 0.3) 
-            pos_hint: {'center_x': 0.5, 'center_y': 0.51} 
+            size_hint: (0.6, 0.28) 
+            pos_hint: {'center_x': 0.512, 'center_y': 0.515} 
             spacing: dp(10)
 
             Label:
@@ -316,21 +316,21 @@ Builder.load_string('''
                 
             Button:
                 text: "Animals & Nature"
-                font_size: '20sp'
+                font_size: '23sp'
                 background_color: (0, 0, 0, 0) 
                 color: (0.3, 0.15, 0, 1)
                 on_release: root.select_category("Animals & Nature")
                 
             Button:
                 text: "Daily Life"
-                font_size: '20sp'
+                font_size: '23sp'
                 background_color: (0, 0, 0, 0)
                 color: (0.3, 0.15, 0, 1)
                 on_release: root.select_category("Daily Life")
                 
             Button:
                 text: "Science & IT"
-                font_size: '20sp'
+                font_size: '23sp'
                 background_color: (0, 0, 0, 0)
                 color: (0.3, 0.15, 0, 1)
                 on_release: root.select_category("Science, IT & Engineering")
