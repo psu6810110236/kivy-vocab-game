@@ -154,7 +154,7 @@ Builder.load_string('''
             background_color: 0,0,0,0
             on_release:
                 app.sound.play_click()
-                app.root.current = 'select_level'
+                app.root.current = 'start_menu'
 
         Button:
             text: ''
@@ -279,127 +279,153 @@ Builder.load_string('''
             Widget:
                 size_hint_y: 0.1
 
-<SelectLevelScreen>:
+<GameStartMenuScreen>:
     canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
+        # 1. พื้นหลังรูปเดียวที่วาดกระดาษและหินมาครบแล้ว
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'assets/images/menu_bg.png' 
-        Color:
-            rgba: 0, 0, 0, 0.5 
-        Rectangle:
-            pos: self.pos
-            size: self.size
+            source: 'assets/images/start_menu_bg.png' 
 
     FloatLayout:
+        # --- ส่วนแสดงหมวดหมู่ที่ถูกเลือก (วางไว้บนสุด) ---
+        Label:
+            id: underscore_label
+            text: "_ _ _ _ _" 
+            font_size: '35sp'
+            font_name: 'LEELAUIB.TTF' 
+            color: (0,0,0,1)
+            outline_width: 2
+            outline_color: (0, 0, 0, 1)
+            bold: True
+            size_hint: (None, None)
+            pos_hint: {'center_x': 0.506, 'top': 0.665} 
+
+        # --- กลุ่มปุ่มหมวดหมู่ (วางทับตำแหน่งกระดาษในรูป) ---
         BoxLayout:
             orientation: 'vertical'
-            size_hint: 0.85, 0.65
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            padding: dp(20)
-            spacing: dp(15)
-            
-            canvas.before:
-                Color:
-                    rgba: 0.15, 0.05, 0.25, 0.9 
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [25]
-                Color:
-                    rgba: 0.6, 0.8, 0.2, 1 
-                Line:
-                    rounded_rectangle: [self.x, self.y, self.width, self.height, 25]
-                    width: 2.5
+            size_hint: (0.6, 0.3) 
+            pos_hint: {'center_x': 0.5, 'center_y': 0.51} 
+            spacing: dp(10)
 
             Label:
-                text: 'Select Category & Level'
-                font_size: '35sp'
-                font_name: 'LEELAUIB.TTF'
-                color: 0.6, 0.8, 0.2, 1
-                size_hint_y: 0.2
+                text: ""
+                font_size: '26sp'
+                color: (0.2, 0.1, 0, 1) 
                 bold: True
-                outline_width: 3
-                outline_color: 0.2, 0.05, 0.3, 1
                 
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: dp(5)
-                size_hint_y: 0.55
+            Button:
+                text: "Animals & Nature"
+                font_size: '20sp'
+                background_color: (0, 0, 0, 0) 
+                color: (0.3, 0.15, 0, 1)
+                on_release: root.select_category("Animals & Nature")
                 
-                Label:
-                    text: 'Category'
-                    font_size: '22sp'
-                    font_name: 'LEELAUIB.TTF'
-                    size_hint_y: 0.4
-                    color: 1, 1, 1, 1
-                    outline_width: 2
-                    outline_color: 0, 0, 0, 1
-                    
-                Spinner:
-                    id: category_spinner
-                    text: 'Animals & Nature'
-                    values: ['Animals & Nature', 'Daily Life', 'Science, IT & Engineering']
-                    font_name: 'LEELAUIB.TTF'
-                    font_size: '20sp'
-                    size_hint_y: 0.6
-                    background_normal: ''
-                    background_color: 0.9, 0.5, 0.1, 1 
-                    color: 0, 0, 0, 1
-                    
-                Widget:
-                    size_hint_y: 0.1
-                    
-                Label:
-                    text: 'Level'
-                    font_size: '22sp'
-                    font_name: 'LEELAUIB.TTF'
-                    size_hint_y: 0.4
-                    color: 1, 1, 1, 1
-                    outline_width: 2
-                    outline_color: 0, 0, 0, 1
-                    
-                Spinner:
-                    id: level_spinner
-                    text: '1'
-                    values: ['1', '2', '3', '4', '5']
-                    font_name: 'LEELAUIB.TTF'
-                    font_size: '20sp'
-                    size_hint_y: 0.6
-                    background_normal: ''
-                    background_color: 0.5, 0.2, 0.6, 1 
-                    color: 1, 1, 1, 1
+            Button:
+                text: "Daily Life"
+                font_size: '20sp'
+                background_color: (0, 0, 0, 0)
+                color: (0.3, 0.15, 0, 1)
+                on_release: root.select_category("Daily Life")
+                
+            Button:
+                text: "Science & IT"
+                font_size: '20sp'
+                background_color: (0, 0, 0, 0)
+                color: (0.3, 0.15, 0, 1)
+                on_release: root.select_category("Science, IT & Engineering")
+
+        # --- กลุ่มปุ่มความยาก (วางทับก้อนหินในรูป) ---
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.32, 0.15)
+            pos_hint: {'center_x': 0.516, 'center_y': 0.28} 
             
-            Widget:
-                size_hint_y: 0.05
-                
-            BoxLayout:
-                size_hint_y: 0.25
-                spacing: dp(15)
-                
-                SmoothButton:
-                    text: 'Back'
-                    bg_color: 0.9, 0.4, 0.1, 1
+            Button:
+                background_color: (0, 0, 0, 0) 
+                on_release: root.select_difficulty(1)
+                Label:
+                    id: diff_1_label
+                    text: "1"
+                    font_size: '45sp'
                     font_name: 'LEELAUIB.TTF'
-                    font_size: '22sp'
-                    radius: [20]
-                    on_release: 
-                        app.sound.play_click()
-                        app.root.current = 'main_menu'
-                        
-                SmoothButton:
-                    text: 'Start Game'
-                    bg_color: 0.6, 0.8, 0.2, 1 
-                    color: 0.1, 0.2, 0.05, 1
+                    color: (1, 1, 1, 1)
+                    center: self.parent.center 
+                    
+            Button:
+                background_color: (0, 0, 0, 0)
+                on_release: root.select_difficulty(2)
+                Label:
+                    id: diff_2_label
+                    text: "2"
+                    font_size: '45sp'
                     font_name: 'LEELAUIB.TTF'
-                    font_size: '22sp'
-                    bold: True
-                    radius: [20]
-                    on_release: 
-                        app.sound.play_click()
-                        app.start_game_with_settings(category_spinner.text, level_spinner.text)
+                    color: (1, 1, 1, 1)
+                    center: self.parent.center
+                    
+            Button:
+                background_color: (0, 0, 0, 0)
+                on_release: root.select_difficulty(3)
+                Label:
+                    id: diff_3_label
+                    text: "3"
+                    font_size: '45sp'
+                    font_name: 'LEELAUIB.TTF'
+                    color: (1, 1, 1, 1)
+                    center: self.parent.center
+
+            Button:
+                background_color: (0, 0, 0, 0)
+                on_release: root.select_difficulty(4)
+                Label:
+                    id: diff_4_label
+                    text: "4"
+                    font_size: '45sp'
+                    font_name: 'LEELAUIB.TTF'
+                    color: (1, 1, 1, 1)
+                    center: self.parent.center
+
+            Button:
+                background_color: (0, 0, 0, 0)
+                on_release: root.select_difficulty(5)
+                Label:
+                    id: diff_5_label
+                    text: "5"
+                    font_size: '45sp'
+                    font_name: 'LEELAUIB.TTF'
+                    color: (1, 1, 1, 1)
+                    center: self.parent.center
+
+        # --- ปุ่มเริ่มเกม และกลับเมนูหลัก ---
+        # --- ปุ่ม BACK ล่องหน (วางทับปุ่มในรูป) ---
+        Button:
+            text: ""  # ลบข้อความออก
+            background_normal: '' 
+            # ตั้งค่าสีเป็น 0,0,0,0 คือโปร่งใส 100% (มองไม่เห็นแต่กดได้)
+            background_color: (0, 0, 0, 0) 
+            
+            # 🔴 ปรับขนาดกรอบที่กดได้ให้พอดีกับปุ่มในรูป
+            size_hint: (0.16, 0.08) 
+            # 🔴 ขยับตำแหน่งกรอบให้ไปทับปุ่ม BACK ในรูป
+            pos_hint: {'center_x': 0.395, 'center_y': 0.11} 
+            
+            on_release: 
+                app.sound.play_click()
+                app.root.current = 'main_menu'
+
+        # --- ปุ่ม START GAME ล่องหน (วางทับปุ่มในรูป) ---
+        Button:
+            text: ""  # ลบข้อความออก
+            background_normal: ''
+            # ตั้งค่าสีโปร่งใส 100%
+            background_color: (0, 0, 0, 0) 
+            
+            # 🔴 ปรับขนาดกรอบที่กดได้ให้พอดีกับปุ่มในรูป
+            size_hint: (0.2, 0.1) 
+            # 🔴 ขยับตำแหน่งกรอบให้ไปทับปุ่ม START ในรูป
+            pos_hint: {'center_x': 0.62, 'center_y': 0.11} 
+            
+            on_release: root.start_game()
 
 # ==========================================
 # เค้าโครง MainLayout โฉมใหม่ (ลดความอึดอัด + อธิบายสกิล)
@@ -805,8 +831,50 @@ class MainMenuScreen(Screen):
 class OptionsScreen(Screen):
     pass
 
-class SelectLevelScreen(Screen): 
-    pass
+class GameStartMenuScreen(Screen):
+    selected_category = None
+    selected_difficulty = None
+
+    def select_category(self, category_name):
+        self.selected_category = category_name
+        self.ids.underscore_label.text = f"{category_name}"
+        self.ids.underscore_label.color = (0.2, 1, 0.2, 1)
+
+    def select_difficulty(self, diff_level):
+        self.selected_difficulty = diff_level
+        
+        default_color = (1, 1, 1, 1)
+        selected_color = (1, 0.6, 0.2, 1)
+
+        self.ids.diff_1_label.color = default_color
+        self.ids.diff_2_label.color = default_color
+        self.ids.diff_3_label.color = default_color
+        self.ids.diff_4_label.color = default_color
+        self.ids.diff_5_label.color = default_color
+
+        if diff_level == 1:
+            self.ids.diff_1_label.color = selected_color
+        elif diff_level == 2:
+            self.ids.diff_2_label.color = selected_color
+        elif diff_level == 3:
+            self.ids.diff_3_label.color = selected_color
+        elif diff_level == 4:
+            self.ids.diff_4_label.color = selected_color
+        elif diff_level == 5:
+            self.ids.diff_5_label.color = selected_color
+
+    def start_game(self):
+        if self.selected_category and self.selected_difficulty:
+            app = App.get_running_app()
+            app.sound.play_click()
+            # ส่งค่าไปยังระบบเริ่มเกมหลัก
+            app.start_game_with_settings(self.selected_category, str(self.selected_difficulty))
+        else:
+            # ถ้ายังเลือกไม่ครบ ให้กระพริบตัวหนังสือเตือน
+            app = App.get_running_app()
+            app.sound.play_noscore()
+            anim = Animation(color=(1, 0, 0, 1), duration=0.1) + Animation(color=(1, 1, 1, 1), duration=0.1)
+            anim.start(self.ids.underscore_label)
 
 class GameScreen(Screen):
     def on_enter(self, *args):
@@ -1479,6 +1547,7 @@ class MainLayout(FloatLayout):
         self.update_ui()
         Clock.schedule_once(self._force_focus, 0.3)
 
+
 class VocabGameApp(App):
     volume_level = NumericProperty(0.3) 
     bg_music = None
@@ -1499,19 +1568,24 @@ class VocabGameApp(App):
         
         menu_screen = MainMenuScreen(name='main_menu')
         options_screen = OptionsScreen(name='options_screen')
-        select_level_screen = SelectLevelScreen(name='select_level') 
+        
+        # 🔴 เปลี่ยนบรรทัดนี้
+        start_menu_screen = GameStartMenuScreen(name='start_menu') 
+        
         game_screen = GameScreen(name='game_screen')
         
         game_layout = MainLayout()
         game_screen.add_widget(game_layout)
         
         sm.add_widget(menu_screen)
-        sm.add_widget(select_level_screen) 
+        
+        # 🔴 เปลี่ยนบรรทัดนี้
+        sm.add_widget(start_menu_screen) 
+        
         sm.add_widget(options_screen)
         sm.add_widget(game_screen)
         
         return sm
-
     def change_volume(self, change):
         new_vol = self.volume_level + change
         self.volume_level = max(0.0, min(1.0, new_vol))
