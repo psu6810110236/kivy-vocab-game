@@ -13,7 +13,7 @@ class GameLogic:
         # แปลงเป็นตัวพิมพ์เล็กและตัดช่องว่างเพื่อความแม่นยำในการตรวจ
         if str(user_answer).strip().lower() == str(correct_word).strip().lower():
             # ตอบถูก: เพิ่มคะแนนตามตัวคูณ Combo และเพิ่ม Streak
-            self.score += (10 * self.combo_multiplier)
+            self.score += (5 * self.combo_multiplier)
             self.streak += 1
             self.update_combo()
             return True
