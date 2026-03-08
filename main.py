@@ -1319,17 +1319,18 @@ class MainLayout(FloatLayout):
             r_color = (1, 1, 1, 1)
             
             if self.time_left >= 10:
-                speed_bonus = 30
+                speed_bonus = 10 
                 rating_text = "PERFECT!"
                 r_color = (1, 0.8, 0.1, 1) 
             elif self.time_left >= 5:
-                speed_bonus = 15
+                speed_bonus = 5 
                 rating_text = "GREAT!"
                 r_color = (0.2, 1, 0.2, 1) 
             else:
-                speed_bonus = 5
+
+                speed_bonus = 0 
                 rating_text = "GOOD!"
-                r_color = (0.4, 0.9, 1, 1) 
+                r_color = (0.4, 0.9, 1, 1)
                 
             self.logic.score += speed_bonus 
             
