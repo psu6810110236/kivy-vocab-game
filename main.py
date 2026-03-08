@@ -990,7 +990,9 @@ class MainLayout(FloatLayout):
             event = random.choice(['thunder', 'poltergeist', 'jump_scare'])
             
             if event == 'thunder':
+                self.sound.play_thunder()
                 self.flash_color = [1, 1, 1, 0.9] 
+                
                 anim = Animation(flash_color=[0, 0, 0, 0.95], duration=0.1) + Animation(flash_color=[0, 0, 0, 0], duration=0.6)
                 anim.start(self)
                 
@@ -1011,26 +1013,25 @@ class MainLayout(FloatLayout):
                     shake.start(self)
                 
             elif event == 'poltergeist':
-                self.word_label.color = (1, 0.2, 0.2, 1) 
+                self.word_label.color = (1, 1, 0.5, 1) 
+                self.sound.play_poltergeist()
+                # --- เปลี่ยนจากการเขย่าแกน X มาเป็นการกระพริบ (Opacity) แทน ---
+                word_flicker = Animation(opacity=0.2, duration=0.05) + Animation(opacity=1, duration=0.05)
+                word_flicker.repeat = True
+                word_flicker.start(self.word_label)
                 
-                og_word_x = self.word_label.x
-                word_shake = Animation(x=og_word_x - dp(20), duration=0.05) + Animation(x=og_word_x + dp(20), duration=0.05)
-                word_shake.repeat = True
-                word_shake.start(self.word_label)
-                
-                og_input_x = self.answer_input.x
-                input_shake = Animation(x=og_input_x + dp(15), duration=0.05) + Animation(x=og_input_x - dp(15), duration=0.05)
-                input_shake.repeat = True
-                input_shake.start(self.answer_input)
+                input_flicker = Animation(opacity=0.2, duration=0.05) + Animation(opacity=1, duration=0.05)
+                input_flicker.repeat = True
+                input_flicker.start(self.answer_input)
                 
                 def stop_poltergeist(*args):
-                    Animation.cancel_all(self.word_label, 'x')
-                    Animation.cancel_all(self.answer_input, 'x')
-                    self.word_label.x = og_word_x
-                    self.answer_input.x = og_input_x
+                    Animation.cancel_all(self.word_label, 'opacity')
+                    Animation.cancel_all(self.answer_input, 'opacity')
+                    self.word_label.opacity = 1
+                    self.answer_input.opacity = 1
                     self.word_label.color = (1, 1, 1, 1) 
                     
-                Clock.schedule_once(stop_poltergeist, 1.5)
+                Clock.schedule_once(stop_poltergeist, 2.0)
                 
             elif event == 'jump_scare':
                 scary_texts = ["BEHIND YOU!", "I SEE YOU...", "BOO!!", "ระวังข้างหลัง!!"]
@@ -1046,7 +1047,7 @@ class MainLayout(FloatLayout):
                     size_hint=(None, None)
                 )
                 self.add_widget(scary_label)
-                
+                self.sound.play_jumpscare()
                 anim = Animation(font_size=sp(160), opacity=0, duration=0.8, transition='out_expo')
                 anim.bind(on_complete=lambda *args: self.remove_widget(scary_label))
                 anim.start(scary_label)
@@ -1101,8 +1102,8 @@ class MainLayout(FloatLayout):
         anim.start(self.score_label)
 
     def animate_word_in(self):
-        self.word_label.x = -self.width
-        Animation(x=0, duration=0.3, transition='out_bounce').start(self.word_label)
+        self.word_label.opacity = 0
+        Animation(opacity=1, duration=0.3, transition='out_quad').start(self.word_label)
 
     def load_vocabulary(self, category_name, level):
         cat_map = {

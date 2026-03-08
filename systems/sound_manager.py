@@ -1,5 +1,5 @@
 from kivy.core.audio import SoundLoader
-
+from kivy.clock import Clock
 class SoundManager:
     def __init__(self):
         self.correct = SoundLoader.load("assets/sound/correct.wav")
@@ -11,6 +11,9 @@ class SoundManager:
         self.shop_eror = SoundLoader.load('assets/sound/shop_error.mp3')
         self.typing_sound = SoundLoader.load('assets/sound/typing.mp3')
         self.wrong_answer_sound = SoundLoader.load('assets/sound/wrong_answer.mp3')
+        self.sfx_thunder = SoundLoader.load('assets/sound/thunder.mp3')
+        self.sfx_poltergeist = SoundLoader.load('assets/sound/whisper.mp3')
+        self.sfx_jumpscare = SoundLoader.load('assets/sound/scream.mp3')
         # 2. ตั้งค่าระดับเสียงและการวนลูป (Loop)
         if self.menu_bgm:
             self.menu_bgm.volume = 0.3
@@ -96,3 +99,15 @@ class SoundManager:
             self.menu_bgm.stop()
         if self.game_bgm:
             self.game_bgm.stop()
+    
+    def play_thunder(self):
+        if self.sfx_thunder:
+            self.sfx_thunder.play()
+
+    def play_poltergeist(self):
+        if self.sfx_poltergeist:
+            self.sfx_poltergeist.play()
+            Clock.schedule_once(lambda dt: self.sfx_poltergeist.stop(), 2.0)
+    def play_jumpscare(self):
+        if self.sfx_jumpscare:
+            self.sfx_jumpscare.play()
