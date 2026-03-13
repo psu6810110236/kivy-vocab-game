@@ -23,3 +23,5 @@ env/
 # OS specific (ไฟล์ขยะของ Windows/Mac)
 .DS_Store
 Thumbs.db
+
+highscore.json

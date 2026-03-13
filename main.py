@@ -601,7 +601,7 @@ Builder.load_string('''
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
-            height: dp(70)
+            height: dp(60)
             spacing: dp(15)
 
             TextInput:
