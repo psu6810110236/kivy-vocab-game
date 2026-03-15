@@ -350,11 +350,15 @@
         Rectangle:
             size: self.size
             pos: self.pos
+
+    # ---------------------------
+    # แถบบนสุด (ด่าน)
+    # ---------------------------
     Label:
         id: level_label
         text: "ด่าน: 1"
         font_size: '28sp'
-        font_name: 'LEELAUIB.TTF'
+        font_name: 'ThaiFont'
         bold: True
         color: 1, 0.85, 0.1, 1
         outline_width: 2
@@ -362,9 +366,7 @@
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 0.511, 'top': 0.98}
-    # ---------------------------
-    # ตัวละครหลัก (Scooby) ฝั่งซ้าย
-    # ---------------------------
+
     AnimatedScooby:
         id: scooby
         source: "assets/images/scooby_idle_1.png"
@@ -372,7 +374,7 @@
         pos_hint: {'x': 0.02, 'y': 0.28}
 
     # ---------------------------
-    # UI สเตตัสด้านบน
+    # UI สเตตัสด้านบน (คะแนน, เลือด, เวลา)
     # ---------------------------
     FloatLayout:
         size_hint: 1, 0.13
@@ -386,6 +388,7 @@
                 id: score_label
                 text: "Score: 0"
                 font_size: '20sp' 
+                font_name: 'EngFont'
                 bold: True
                 color: 0.3, 0.9, 0.9, 1
                 outline_width: 2
@@ -399,6 +402,7 @@
                 id: hp_label
                 text: "Snacks: 3/3"
                 font_size: '20sp' 
+                font_name: 'EngFont'
                 bold: True
                 color: 0.9, 0.6, 0.3, 1
                 outline_width: 2
@@ -407,7 +411,7 @@
         SmoothButton:
             text: "II"
             font_size: '22sp'
-            font_name: 'LEELAUIB.TTF'
+            font_name: 'EngFont'
             bold: True
             size_hint: None, None
             size: dp(44), dp(44) 
@@ -434,6 +438,7 @@
                 id: time_label
                 text: "Time: 16s"
                 font_size: '22sp' 
+                font_name: 'EngFont'
                 bold: True
                 color: 0.2, 1, 0.2, 1
                 outline_width: 2
@@ -446,6 +451,7 @@
                 id: combo_label
                 text: "Combo: x1"
                 font_size: '22sp' 
+                font_name: 'EngFont'
                 bold: True
                 color: 0.7, 1, 0.3, 1
                 outline_width: 2
@@ -465,32 +471,27 @@
         Label:
             id: word_label
             text: "Loading..."
-            font_size: '22sp' 
-            font_name: 'LEELAUIB.TTF'
+            font_size: '28sp' 
+            font_name: 'ThaiFont'
             bold: True
             outline_width: 3
             outline_color: 0, 0, 0, 1
-            font_hinting: 'normal'
-            font_kerning: True
             halign: 'center'
             valign: 'middle'
         Label:
             id: underscore_label
             text: "_ _ _ _"
-            font_size: '32sp' 
+            font_size: '35sp' 
             color: 1, 0.8, 0.2, 1
             bold: True
             outline_width: 2
             outline_color: 0, 0, 0, 1
-            font_hinting: 'normal'
-            font_kerning: True
-            font_name: 'LEELAUIB.TTF'
+            font_name: 'EngFont'
             halign: 'center'
             valign: 'middle'
         
-
     # ---------------------------
-    # UI ด้านล่าง (จัดใหม่ให้มีพื้นที่ และอธิบายสกิลด้านข้าง)
+    # UI ด้านล่าง (สกิลและช่องพิมพ์)
     # ---------------------------
     BoxLayout:
         orientation: 'vertical'
@@ -506,39 +507,34 @@
 
             TextInput:
                 id: answer_input
-                hint_text: "Type translation..."
+                hint_text: "พิมพ์คำแปล..."
                 multiline: False
                 font_size: '24sp' 
-                font_name: 'LEELAUIB.TTF'
+                font_name: 'ThaiFont'
                 halign: "center"
                 background_color: 0, 0, 0, 0
                 foreground_color: 1, 1, 1, 1
                 hint_text_color: 1, 1, 1, 0.5
                 cursor_color: 0.2, 0.6, 1, 1
                 padding: [dp(8), dp(10)]
-                font_hinting: 'normal'
-                font_kerning: True
-                max_text_length: 50
                 on_text_validate: root.check_answer(self)
 
             SmoothButton:
-                text: ""
-                font_name: 'LEELAUIB.TTF'
+                text: "ส่ง"
+                font_name: 'ThaiFont'
                 font_size: '22sp' 
                 bold: True
                 size_hint_x: 0.3
-                bg_color: 0, 0, 0, 0 
-                shadow_color: 0, 0, 0, 0
+                bg_color: 0.2, 0.6, 1, 0.5
                 color: 1, 1, 1, 1
                 on_release: root.check_answer(self)
 
-        # แถว 2: สกิล (จัดเป็น 2 คอลัมน์ จะได้เขียนอธิบายข้างๆ ได้)
+        # แถว 2: สกิล
         GridLayout:
             cols: 2
             spacing: dp(8)
             size_hint_y: 0.72
             
-            # สกิล 1: เพิ่มเลือด
             CardBox:
                 orientation: 'horizontal'
                 padding: dp(10)
@@ -551,9 +547,9 @@
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        text: "Heal"
+                        text: "HEAL"
                         font_size: '20sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 0.2, 1, 0.2, 1
                         bold: True
                         text_size: self.size
@@ -562,13 +558,12 @@
                     Label:
                         text: "50 Pt"
                         font_size: '16sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 1, 0.8, 0.2, 1
                         text_size: self.size
                         halign: 'left'
                         valign: 'top'
 
-            # สกิล 2: คำใบ้
             CardBox:
                 orientation: 'horizontal'
                 padding: dp(10)
@@ -581,9 +576,9 @@
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        text: "Hint"
+                        text: "HINT"
                         font_size: '20sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 0.4, 0.9, 1, 1
                         bold: True
                         text_size: self.size
@@ -592,13 +587,12 @@
                     Label:
                         text: "20 Pt"
                         font_size: '16sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 1, 0.8, 0.2, 1
                         text_size: self.size
                         halign: 'left'
                         valign: 'top'
 
-            # สกิล 3: หนีผี
             CardBox:
                 orientation: 'horizontal'
                 padding: dp(10)
@@ -611,9 +605,9 @@
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        text: "Reset Ghost"
+                        text: "ESCAPE"
                         font_size: '20sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 0.8, 0.5, 1, 1
                         bold: True
                         text_size: self.size
@@ -622,20 +616,19 @@
                     Label:
                         text: "30 Pt"
                         font_size: '16sp'
-                        font_name: 'LEELAUIB.TTF'
+                        font_name: 'EngFont'
                         color: 1, 0.8, 0.2, 1
                         text_size: self.size
                         halign: 'left'
                         valign: 'top'
                         
-            # ช่องว่างเพื่อให้ Grid สมดุล (สามารถใส่ข้อความให้กำลังใจได้)
             CardBox:
                 orientation: 'vertical'
                 padding: dp(5)
                 Label:
-                    text: "Type fast, ghost is coming!"
-                    font_size: '15sp'
-                    font_name: 'LEELAUIB.TTF'
+                    text: "ระวังผีหลอกนะ!"
+                    font_size: '18sp'
+                    font_name: 'ThaiFont'
                     color: 1, 1, 1, 0.5
                     bold: True
 
@@ -664,7 +657,7 @@
             Label:
                 text: "GAME PAUSED"
                 font_size: '38sp'
-                font_name: 'LEELAUIB.TTF'
+                font_name: 'EngFont'
                 bold: True
                 color: 1, 0.85, 0.1, 1
                 outline_width: 3
@@ -680,7 +673,7 @@
                 
                 SmoothButton:
                     text: "Resume"
-                    font_name: 'LEELAUIB.TTF'
+                    font_name: 'EngFont'
                     font_size: '22sp'
                     bg_color: 0.55, 0.9, 0.2, 1
                     color: 0.1, 0.2, 0.05, 1
@@ -689,7 +682,7 @@
                     
                 SmoothButton:
                     text: "Options"
-                    font_name: 'LEELAUIB.TTF'
+                    font_name: 'EngFont'
                     font_size: '22sp'
                     bg_color: 0.9, 0.5, 0.1, 1
                     color: 1, 1, 1, 1
@@ -698,7 +691,7 @@
                     
                 SmoothButton:
                     text: "Main Menu"
-                    font_name: 'LEELAUIB.TTF'
+                    font_name: 'EngFont'
                     font_size: '22sp'
                     bg_color: 0.8, 0.2, 0.3, 1
                     color: 1, 1, 1, 1

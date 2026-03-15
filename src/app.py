@@ -26,13 +26,16 @@ from kivy.animation import Animation
 import os
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 
+
 Window.size = (1920, 1080)
 Window.minimum_width = 1920
 Window.minimum_height = 1080
 
-# --- แก้ไข Path Font ให้ดึงจากโฟลเดอร์ assets/fonts ---
-LabelBase.register(DEFAULT_FONT, 'assets/fonts/LEELAUIB.TTF') 
-LabelBase.register('LEELAUIB.TTF', 'assets/fonts/LEELAUIB.TTF') 
+LabelBase.register(name='EngFont', fn_regular='assets/fonts/english_font.ttf')
+LabelBase.register(name='ThaiFont', fn_regular='assets/fonts/thai_font.ttf')
+
+# ตั้งให้ฟอนต์ไทยเป็นฟอนต์หลักของแอปเผื่อลืมใส่ font_name
+LabelBase.register(DEFAULT_FONT, 'assets/fonts/english_font.ttf')
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -489,7 +492,7 @@ Builder.load_string('''
         size_hint: 1, None
         height: dp(150) 
         pos_hint: {'center_x': 0.496, 'y': 0.615}
-        spacing: dp(-4)
+        spacing: dp(-40)
         Label:
             id: word_label
             text: "Loading..."
@@ -511,7 +514,7 @@ Builder.load_string('''
         size_hint: 0.95, None  
         height: dp(230)        
         pos_hint: {'center_x': 0.5, 'y': 0.07}
-        spacing: dp(25)
+        spacing: dp(40)
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
