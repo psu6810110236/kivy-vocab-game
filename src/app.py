@@ -70,6 +70,16 @@ class AnimatedScooby(Image):
         Clock.schedule_interval(self.update_frame, 0.2)
 
     def update_frame(self, dt):
+        app = App.get_running_app() if App.get_running_app() else None
+        if app:
+            sm = app.root
+            if sm and sm.current == 'game_screen':
+                game_screen = sm.get_screen('game_screen')
+                for child in game_screen.children:
+                    from kivy.uix.floatlayout import FloatLayout
+                    if hasattr(child, 'is_paused') and child.is_paused:
+                        Clock.schedule_once(self.update_frame, 0.2)
+                        return
         if self.state == 'idle':
             speed = 0.9
         elif self.state == 'happy':
@@ -644,55 +654,37 @@ Builder.load_string('''
         pos_hint: {'y': 10}
         canvas.before:
             Color:
-                rgba: 0.1, 0.05, 0.15, 0.85
+                rgba: 0, 0, 0, 0.88
             Rectangle:
                 size: self.size
                 pos: self.pos
-        CardBox:
-            orientation: 'vertical'
-            size_hint: 0.85, 0.6
+        Image:
+            source: 'assets/images/pause_bg_new.png'
+            allow_stretch: True
+            keep_ratio: True
+            size_hint: 0.85, 0.75
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            padding: dp(25)
-            spacing: dp(20)
-            Label:
-                text: "GAME PAUSED"
-                font_size: '45sp'
-                font_name: 'LEELAUIB.TTF'
-                bold: True
-                color: 1, 0.85, 0.1, 1
-                outline_width: 3
-                outline_color: 0.3, 0.1, 0.4, 1
-                size_hint_y: 0.35
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: dp(15)
-                size_hint_y: 0.65
-                size_hint_x: 0.9
-                pos_hint: {'center_x': 0.5}
-                SmoothButton:
-                    text: "Resume"
-                    font_name: 'LEELAUIB.TTF'
-                    font_size: '24sp'
-                    bg_color: 0.55, 0.9, 0.2, 1
-                    color: 0.1, 0.2, 0.05, 1
-                    radius: [25]
-                    on_release: root.toggle_pause()
-                SmoothButton:
-                    text: "Options"
-                    font_name: 'LEELAUIB.TTF'
-                    font_size: '24sp'
-                    bg_color: 0.9, 0.5, 0.1, 1
-                    color: 1, 1, 1, 1
-                    radius: [25]
-                    on_release: root.go_to_options_from_pause(self)
-                SmoothButton:
-                    text: "Main Menu"
-                    font_name: 'LEELAUIB.TTF'
-                    font_size: '24sp'
-                    bg_color: 0.8, 0.2, 0.3, 1
-                    color: 1, 1, 1, 1
-                    radius: [25]
-                    on_release: root.quit_to_main_menu(self)
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            size_hint: 0.25, 0.09
+            pos_hint: {'center_x': 0.5, 'center_y': 0.65}
+            on_release: root.toggle_pause()
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            size_hint: 0.25, 0.09
+            pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+            on_release: root.go_to_options_from_pause(self)
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            size_hint: 0.25, 0.09
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+            on_release: root.quit_to_main_menu(self)
 ''')
 
 class MainMenuScreen(Screen):
@@ -917,6 +909,10 @@ class MainLayout(FloatLayout):
                 anim.start(scary_label)
 
     def idle_animations(self, dt):
+        if self.is_paused:
+            Animation.cancel_all(self.scooby)
+            Animation.cancel_all(self.ghost)
+            return
         if not self.is_paused and not getattr(self.ghost, 'is_paused', True):
             base_scooby_y = self.height * 0.30  
             anim = Animation(y=base_scooby_y + dp(10), duration=0.5) + Animation(y=base_scooby_y, duration=0.5)
@@ -1048,6 +1044,8 @@ class MainLayout(FloatLayout):
             return 
         self.is_paused = not self.is_paused
         if self.is_paused:
+            self._saved_time_speed = self.time_speed
+            self.time_speed = 0
             self.answer_input.text = ""
             Animation(opacity=1, duration=0.2).start(self.pause_overlay)
             self.pause_overlay.disabled = False
@@ -1055,6 +1053,7 @@ class MainLayout(FloatLayout):
             self.answer_input.disabled = True
             self.ghost.is_paused = True 
         else:
+            self.time_speed = getattr(self, '_saved_time_speed', 1.0)
             anim = Animation(opacity=0, duration=0.2)
             anim.bind(on_complete=lambda *args: setattr(self.pause_overlay, 'pos_hint', {'y': 10}))
             anim.start(self.pause_overlay)
