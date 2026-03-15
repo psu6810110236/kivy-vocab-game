@@ -191,81 +191,59 @@ Builder.load_string('''
                 outline_color: 0.3, 0.1, 0.4, 1
 
 <OptionsScreen>:
-    canvas.before:
-        Rectangle:
-            pos: self.pos
-            size: self.size
-            source: 'assets/images/bg_scooby_doo.png'
-        Color:
-            rgba: 0.15, 0.05, 0.25, 0.85
-        Rectangle:
-            pos: self.pos
-            size: self.size
     FloatLayout:
-        CardBox:
-            orientation: 'vertical'
-            size_hint: 0.85, 0.55
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            padding: dp(30)
-            spacing: dp(20)
-            Label:
-                text: 'Settings'
-                font_size: '45sp'
-                font_name: 'LEELAUIB.TTF'
-                color: 0.6, 0.8, 0.2, 1
-                size_hint_y: 0.3
-                bold: True
-                outline_width: 3
-                outline_color: 0.2, 0.05, 0.3, 1
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint_y: 0.3
-                size_hint_x: 0.9
-                pos_hint: {'center_x': 0.5}
-                spacing: 20
-                SmoothButton:
-                    text: '-'
-                    font_size: '50sp'
-                    size_hint_x: 0.25
-                    bg_color: 0.9, 0.4, 0.1, 1
-                    radius: [20]
-                    on_release: 
-                        app.sound.play_click()
-                        app.change_volume(-0.1)
-                Label:
-                    text: f'Music: {int(app.volume_level * 100)}%'
-                    font_size: '28sp'
-                    font_name: 'LEELAUIB.TTF'
-                    size_hint_x: 0.5
-                    color: 1, 1, 1, 1
-                    outline_width: 2
-                    outline_color: 0, 0, 0, 1
-                SmoothButton:
-                    text: '+'
-                    font_size: '50sp'
-                    size_hint_x: 0.25
-                    bg_color: 0.6, 0.8, 0.2, 1
-                    radius: [20]
-                    on_release: 
-                        app.sound.play_click()
-                        app.change_volume(0.1)
-            Widget:
-                size_hint_y: 0.1
-            SmoothButton:
-                text: 'Back'
-                font_size: '28sp'
-                font_name: 'LEELAUIB.TTF'
-                size_hint_y: None
-                height: '70sp'
-                size_hint_x: 0.6
-                pos_hint: {'center_x': 0.5}
-                bg_color: 0.5, 0.2, 0.6, 1
-                radius: [25]
-                on_release: 
-                    app.sound.play_click()
-                    app.back_from_options()
-            Widget:
-                size_hint_y: 0.1
+        Image:
+            source: 'assets/images/settings_bg.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: 1, 1
+
+        # แสดง % เสียงไว้ตรงกลางภาพ (บริเวณช่อง Music:)
+        Label:
+            text: f'Music: {int(app.volume_level * 100)}%'
+            font_size: '50sp'
+            font_name: 'LEELAUIB.TTF'
+            color: 1, 1, 1, 1
+            bold: True
+            outline_width: 2
+            outline_color: 0, 0, 0, 1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.58}
+            size_hint: None, None
+            size: dp(300), dp(50)
+
+        # ปุ่ม - (ซ้าย)
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            size_hint: 0.1, 0.12
+            pos_hint: {'center_x': 0.33, 'center_y': 0.58}
+            on_release:
+                app.sound.play_click()
+                app.change_volume(-0.1)
+
+        # ปุ่ม + (ขวา)
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+            size_hint: 0.1, 0.12
+            pos_hint: {'center_x': 0.67, 'center_y': 0.58}
+            on_release:
+                app.sound.play_click()
+                app.change_volume(0.1)
+
+        # ปุ่ม Back
+        Button:
+            text: ''
+            background_normal: ''
+            background_color: 0, 0, 0, 0
+                    
+            size_hint: 0.3, 0.11
+            pos_hint: {'center_x': 0.5, 'center_y': 0.43}
+            on_release:
+                app.sound.play_click()
+                app.back_from_options()
 
 <GameStartMenuScreen>:
     canvas.before:
