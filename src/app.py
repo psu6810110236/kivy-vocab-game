@@ -32,6 +32,9 @@ Window.minimum_height = 640
 # --- แก้ไข Path Font ให้ดึงจากโฟลเดอร์ assets/fonts ---
 LabelBase.register(DEFAULT_FONT, 'assets/fonts/LEELAUIB.TTF') 
 LabelBase.register('LEELAUIB.TTF', 'assets/fonts/LEELAUIB.TTF') 
+LabelBase.register('NotoSansThai',                                    # เปลี่ยนบรรทัดนี้
+    fn_regular='assets/fonts/NotoSansThai-Regular.ttf',
+    fn_bold='assets/fonts/NotoSansThai-Bold.ttf')
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -475,13 +478,13 @@ Builder.load_string('''
         orientation: 'vertical'
         size_hint: 1, None
         height: dp(150) 
-        pos_hint: {'center_x': 0.496, 'y': 0.55}
+        pos_hint: {'center_x': 0.496, 'y': 0.545}
         spacing: dp(0)
         Label:
             id: word_label
             text: "Loading..."
             font_size: '20sp' 
-            font_name: 'LEELAUIB.TTF'
+            font_name: 'NotoSansThai'
             bold: True
             outline_width: 3
             outline_color: 0, 0, 0, 1
