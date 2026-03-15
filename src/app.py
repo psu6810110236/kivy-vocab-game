@@ -281,26 +281,34 @@ Builder.load_string('''
                 font_size: '23sp'
                 background_color: (0, 0, 0, 0) 
                 color: (0.3, 0.15, 0, 1)
-                on_release: root.select_category("Animals & Nature")
+                on_release: 
+                    app.sound.play_click()
+                    root.select_category("Animals & Nature")
             Button:
                 text: "Daily Life"
                 font_size: '23sp'
                 background_color: (0, 0, 0, 0)
                 color: (0.3, 0.15, 0, 1)
-                on_release: root.select_category("Daily Life")
+                on_release: 
+                    app.sound.play_click()
+                    root.select_category("Daily Life")
             Button:
-                text: "Science & IT"
+                text: "Science , IT & ENG"
                 font_size: '23sp'
                 background_color: (0, 0, 0, 0)
                 color: (0.3, 0.15, 0, 1)
-                on_release: root.select_category("Science, IT & Engineering")
+                on_release: 
+                    app.sound.play_click()
+                    root.select_category("Science, IT & Engineering")
         BoxLayout:
             orientation: 'horizontal'
             size_hint: (0.32, 0.15)
             pos_hint: {'center_x': 0.516, 'center_y': 0.28} 
             Button:
                 background_color: (0, 0, 0, 0) 
-                on_release: root.select_difficulty(1)
+                on_release: 
+                    app.sound.play_click()
+                    root.select_difficulty(1)
                 Label:
                     id: diff_1_label
                     text: "1"
@@ -310,7 +318,9 @@ Builder.load_string('''
                     center: self.parent.center 
             Button:
                 background_color: (0, 0, 0, 0)
-                on_release: root.select_difficulty(2)
+                on_release: 
+                    app.sound.play_click()
+                    root.select_difficulty(2)
                 Label:
                     id: diff_2_label
                     text: "2"
@@ -320,7 +330,9 @@ Builder.load_string('''
                     center: self.parent.center
             Button:
                 background_color: (0, 0, 0, 0)
-                on_release: root.select_difficulty(3)
+                on_release: 
+                    app.sound.play_click()
+                    root.select_difficulty(3)
                 Label:
                     id: diff_3_label
                     text: "3"
@@ -330,7 +342,9 @@ Builder.load_string('''
                     center: self.parent.center
             Button:
                 background_color: (0, 0, 0, 0)
-                on_release: root.select_difficulty(4)
+                on_release: 
+                    app.sound.play_click()
+                    root.select_difficulty(4)
                 Label:
                     id: diff_4_label
                     text: "4"
@@ -340,7 +354,9 @@ Builder.load_string('''
                     center: self.parent.center
             Button:
                 background_color: (0, 0, 0, 0)
-                on_release: root.select_difficulty(5)
+                on_release: 
+                    app.sound.play_click()
+                    root.select_difficulty(5)
                 Label:
                     id: diff_5_label
                     text: "5"
